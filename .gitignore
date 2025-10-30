@@ -66,4 +66,4 @@ ref_genome/
 # Other large folders
 apptainer/
 .cache/
-.conda/
+.conda/!docs/*_files/
