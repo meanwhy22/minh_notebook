@@ -1,0 +1,78 @@
+/* =========================================================
+   Contact Section
+   ========================================================= */
+ul.contact-info {
+  list-style: none;               /* remove bullets */
+  padding-left: 0;                /* align with container edge */
+  margin: 0.75em 0 1.25em;        /* balanced vertical spacing */
+}
+
+ul.contact-info li {
+  display: flex;                  /* align icon + text neatly */
+  align-items: center;
+  margin-bottom: 0.5em;           /* consistent spacing between items */
+  font-size: 1.05em;              /* slightly larger for readability */
+  line-height: 1.4;               /* improve text clarity */
+}
+
+ul.contact-info i {
+  flex-shrink: 0;                 /* prevent icon from shrinking */
+  margin-right: 0.6em;            /* space between icon & text */
+  width: 1.2em;                   /* consistent icon width */
+  text-align: center;
+  color: #555;                    /* subtle icon tone */
+  opacity: 0.9;                   /* slight softening */
+}
+
+/* =========================================================
+   Figures
+   ========================================================= */
+.figure-caption {
+  display: block;                 /* ensure below image */
+  margin-top: 6px;                /* spacing from image */
+  text-align: center;             /* center under image */
+  font-size: 0.9em;
+  color: #666;                    /* softer caption tone */
+  line-height: 1.4;
+}
+
+/* =========================================================
+   Timeline
+   ========================================================= */
+.timeline {
+  display: flex;
+  flex-direction: column;         /* vertical layout */
+  gap: 1em;                       /* space between entries */
+  margin-top: 0.75em;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1em;                       /* space between year & details */
+}
+
+.timeline-year {
+  flex-shrink: 0;                 /* prevent shrinking */
+  color: #2980b9;                 /* accent color */
+  font-weight: 600;
+  text-align: right;              /* clean right alignment */
+  line-height: 1.4;
+}
+
+.timeline-degree {
+  font-weight: 600;               /* emphasize degree/title */
+  line-height: 1.4;
+}
+
+.timeline-grade {
+  margin-top: 2px;
+  font-size: 0.95em;
+  color: #444;
+}
+
+.timeline-institution {
+  margin-left: 0.5em;             /* subtle visual separation */
+  font-weight: 400;
+  color: #555;
+}

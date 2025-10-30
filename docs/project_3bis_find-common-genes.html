@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Finding common dysregulated genes in different DMD models</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="assets/style_table.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Minh's Notebook</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Resume
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="aboutme.html">About Minh</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="projects.html">My practice sessions</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="contact.html">Contact</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://meanwhy22.github.io/my-first-website/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Finding common dysregulated genes in
+different DMD models</h1>
+
+</div>
+
+
+<blockquote>
+<p><strong>Date:</strong> 26/10/2025</p>
+<p><strong>Description:</strong> In this session, we’re going to
+intersect lists of DE genes derived from different models for DMD: mdx
+mouse, rat, and human organoid.</p>
+</blockquote>
+<div id="deg-lists" class="section level2">
+<h2>DEG lists</h2>
+<div id="differentially-expressed-genes-in-dmd-versus-wildtype-rat"
+class="section level3">
+<h3>Differentially expressed genes in DMD versus wildtype rat:</h3>
+<pre class="r"><code>DMD_vs_WT_rat_DEGs &lt;- read.table(file = &quot;projects/project_2/DEG_List/DMD_vs_WT_DEGs.txt&quot;, header = TRUE)
+table(DMD_vs_WT_rat_DEGs$regulation)</code></pre>
+<pre><code>## 
+##   Down NotSig     Up 
+##    378   8678    542</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+DE genes: DMD versus WT rat
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+p_val
+</th>
+<th style="text-align:right;">
+avg_log2FC
+</th>
+<th style="text-align:right;">
+pct.1
+</th>
+<th style="text-align:right;">
+pct.2
+</th>
+<th style="text-align:right;">
+p_val_adj
+</th>
+<th style="text-align:left;">
+gene
+</th>
+<th style="text-align:left;">
+regulation
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-5.165443
+</td>
+<td style="text-align:right;">
+0.011
+</td>
+<td style="text-align:right;">
+0.278
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+AABR07060872.1
+</td>
+<td style="text-align:left;">
+Down
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.393047
+</td>
+<td style="text-align:right;">
+0.593
+</td>
+<td style="text-align:right;">
+0.200
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Gadd45g
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.114949
+</td>
+<td style="text-align:right;">
+0.534
+</td>
+<td style="text-align:right;">
+0.118
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Fgl2
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.325948
+</td>
+<td style="text-align:right;">
+0.606
+</td>
+<td style="text-align:right;">
+0.203
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Mgp
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.661093
+</td>
+<td style="text-align:right;">
+0.505
+</td>
+<td style="text-align:right;">
+0.141
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Ifitm1
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.475440
+</td>
+<td style="text-align:right;">
+0.394
+</td>
+<td style="text-align:right;">
+0.074
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Lgals3
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="differentially-expressed-genes-in-dmd-versus-isoctr-organoid"
+class="section level3">
+<h3>Differentially expressed genes in DMD versus IsoCTR organoid:</h3>
+<pre class="r"><code>DMD_vs_IsoCTR_organoid &lt;- read.table(&quot;projects/project_1/DEG_List/Untreated_vs_IsoCTR_DEGs.txt&quot;, header = TRUE)
+table(DMD_vs_IsoCTR_organoid$regulation)</code></pre>
+<pre><code>## 
+##   Down NotSig     Up 
+##    825  13159    671</code></pre>
+<pre class="r"><code># Convert EMSEMBL IDs to gene names
+library(org.Hs.eg.db)
+annots &lt;- AnnotationDbi::select(org.Hs.eg.db,
+                                
+                                # ensembl ids in count table
+                                keys=DMD_vs_IsoCTR_organoid$ENSEMBL,
+                                
+                                columns=c(&quot;SYMBOL&quot;, &quot;GENENAME&quot;), 
+                                keytype=&quot;ENSEMBL&quot;)
+
+# Replace missing SYMBOL with the ENSEMBL ID
+annots$SYMBOL[is.na(annots$SYMBOL)] &lt;- annots$ENSEMBL
+
+# Collapse SYMBOL, but if &gt;1 SYMBOL, use the ENSEMBL ID instead
+annots &lt;- annots %&gt;%
+  group_by(ENSEMBL) %&gt;%
+  summarise(
+    SYMBOL = ifelse(n_distinct(SYMBOL) == 1,
+                    unique(SYMBOL),
+                    ENSEMBL)
+  )
+
+# Add &#39;SYMBOL&#39; column to DEG table
+DMD_vs_IsoCTR_organoid &lt;- DMD_vs_IsoCTR_organoid %&gt;% left_join(annots, by = &quot;ENSEMBL&quot;)</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+DE genes: DMD versus IsoCTR human muscle organoids
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+ENSEMBL
+</th>
+<th style="text-align:right;">
+baseMean
+</th>
+<th style="text-align:right;">
+log2FoldChange
+</th>
+<th style="text-align:right;">
+lfcSE
+</th>
+<th style="text-align:right;">
+stat
+</th>
+<th style="text-align:right;">
+pvalue
+</th>
+<th style="text-align:right;">
+padj
+</th>
+<th style="text-align:left;">
+regulation
+</th>
+<th style="text-align:left;">
+SYMBOL
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ENSG00000187634
+</td>
+<td style="text-align:right;">
+262.6958
+</td>
+<td style="text-align:right;">
+1.0967831
+</td>
+<td style="text-align:right;">
+0.2692019
+</td>
+<td style="text-align:right;">
+4.0742030
+</td>
+<td style="text-align:right;">
+0.0000462
+</td>
+<td style="text-align:right;">
+0.0004405
+</td>
+<td style="text-align:left;">
+Up
+</td>
+<td style="text-align:left;">
+SAMD11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000188976
+</td>
+<td style="text-align:right;">
+2060.0851
+</td>
+<td style="text-align:right;">
+-0.1341256
+</td>
+<td style="text-align:right;">
+0.1038000
+</td>
+<td style="text-align:right;">
+-1.2921540
+</td>
+<td style="text-align:right;">
+0.1963038
+</td>
+<td style="text-align:right;">
+0.3106730
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+NOC2L
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000187961
+</td>
+<td style="text-align:right;">
+484.3473
+</td>
+<td style="text-align:right;">
+0.1117686
+</td>
+<td style="text-align:right;">
+0.1247083
+</td>
+<td style="text-align:right;">
+0.8962403
+</td>
+<td style="text-align:right;">
+0.3701244
+</td>
+<td style="text-align:right;">
+0.4908310
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+KLHL17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000188290
+</td>
+<td style="text-align:right;">
+1008.3230
+</td>
+<td style="text-align:right;">
+-0.4960638
+</td>
+<td style="text-align:right;">
+0.2778573
+</td>
+<td style="text-align:right;">
+-1.7853186
+</td>
+<td style="text-align:right;">
+0.0742097
+</td>
+<td style="text-align:right;">
+0.1552719
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+HES4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000187608
+</td>
+<td style="text-align:right;">
+255.1310
+</td>
+<td style="text-align:right;">
+0.2587048
+</td>
+<td style="text-align:right;">
+0.4036790
+</td>
+<td style="text-align:right;">
+0.6408675
+</td>
+<td style="text-align:right;">
+0.5216087
+</td>
+<td style="text-align:right;">
+0.6307076
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+ISG15
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000188157
+</td>
+<td style="text-align:right;">
+7175.7911
+</td>
+<td style="text-align:right;">
+0.4956149
+</td>
+<td style="text-align:right;">
+0.3370138
+</td>
+<td style="text-align:right;">
+1.4706072
+</td>
+<td style="text-align:right;">
+0.1413974
+</td>
+<td style="text-align:right;">
+0.2460071
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+AGRN
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="differentially-expressed-genes-in-mdx-mice"
+class="section level3">
+<h3>Differentially expressed genes in mdx mice</h3>
+<div id="mdx-versus-wildtype-mouse" class="section level4">
+<h4>mdx versus wildtype mouse:</h4>
+<pre class="r"><code># Start from processed Seurat object
+integrated_harmony &lt;- readRDS(&quot;~/project_3_mdx-mdxD2-mice/integrated_harmony.rds&quot;)
+
+library(Seurat)
+mdx_vs_wt_mouse_DEGs &lt;- FindMarkers(
+  assay = &quot;RNA&quot;, slot = &quot;data&quot;,
+  group.by = &quot;condition&quot;,
+  ident.1 = &quot;mdx&quot;,
+  ident.2 = &quot;wt&quot;,
+  integrated_harmony,
+  only.pos = FALSE,
+  verbose = FALSE
+)
+
+# Classify Up/Down/Non-significant genes
+mdx_vs_wt_mouse_DEGs$regulation &lt;- ifelse(
+  mdx_vs_wt_mouse_DEGs$p_val_adj &lt; 0.01 &amp; 
+    mdx_vs_wt_mouse_DEGs$avg_log2FC &gt; 1, &quot;Up&quot;,
+  ifelse( mdx_vs_wt_mouse_DEGs$p_val_adj &lt; 0.01 &amp; 
+            mdx_vs_wt_mouse_DEGs$avg_log2FC &lt; -1, &quot;Down&quot;,
+          &quot;NotSig&quot;)
+)
+table(mdx_vs_wt_mouse_DEGs$regulation)</code></pre>
+<pre><code>## 
+##   Down NotSig     Up 
+##    928   9599    877</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+DE genes: mdx versus wt mouse
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+p_val
+</th>
+<th style="text-align:right;">
+avg_log2FC
+</th>
+<th style="text-align:right;">
+pct.1
+</th>
+<th style="text-align:right;">
+pct.2
+</th>
+<th style="text-align:right;">
+p_val_adj
+</th>
+<th style="text-align:left;">
+regulation
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Gm10260
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-7.367211
+</td>
+<td style="text-align:right;">
+0.022
+</td>
+<td style="text-align:right;">
+0.794
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Down
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gm13305
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-6.970834
+</td>
+<td style="text-align:right;">
+0.013
+</td>
+<td style="text-align:right;">
+0.563
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Down
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hbb-bs
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-1.344888
+</td>
+<td style="text-align:right;">
+0.402
+</td>
+<td style="text-align:right;">
+0.879
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Down
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ifi27l2a
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.200361
+</td>
+<td style="text-align:right;">
+0.831
+</td>
+<td style="text-align:right;">
+0.388
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gm10036
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+4.382359
+</td>
+<td style="text-align:right;">
+0.423
+</td>
+<td style="text-align:right;">
+0.028
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lyz2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.905192
+</td>
+<td style="text-align:right;">
+0.627
+</td>
+<td style="text-align:right;">
+0.242
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="mdxd2-versus-wildtype-mouse" class="section level4">
+<h4>mdx/D2 versus wildtype mouse:</h4>
+<pre class="r"><code>mdxD2_vs_wt_mouse_DEGs &lt;- FindMarkers(
+  assay = &quot;RNA&quot;, slot = &quot;data&quot;,
+  group.by = &quot;condition&quot;,
+  ident.1 = &quot;mdxD2&quot;,
+  ident.2 = &quot;wt&quot;,
+  integrated_harmony,
+  only.pos = FALSE,
+  verbose = FALSE
+)
+
+# Classify Up/Down/Non-significant genes
+mdxD2_vs_wt_mouse_DEGs$regulation &lt;- ifelse(
+  mdxD2_vs_wt_mouse_DEGs$p_val_adj &lt; 0.01 &amp; 
+    mdxD2_vs_wt_mouse_DEGs$avg_log2FC &gt; 1, &quot;Up&quot;,
+  ifelse( mdxD2_vs_wt_mouse_DEGs$p_val_adj &lt; 0.01 &amp; 
+            mdxD2_vs_wt_mouse_DEGs$avg_log2FC &lt; -1, &quot;Down&quot;,
+          &quot;NotSig&quot;)
+)
+table(mdxD2_vs_wt_mouse_DEGs$regulation)</code></pre>
+<pre><code>## 
+##   Down NotSig     Up 
+##   2613   8282   1595</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+DE genes: mdx/D2 versus wt mice
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+p_val
+</th>
+<th style="text-align:right;">
+avg_log2FC
+</th>
+<th style="text-align:right;">
+pct.1
+</th>
+<th style="text-align:right;">
+pct.2
+</th>
+<th style="text-align:right;">
+p_val_adj
+</th>
+<th style="text-align:left;">
+regulation
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Spp1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+9.729202
+</td>
+<td style="text-align:right;">
+0.962
+</td>
+<td style="text-align:right;">
+0.014
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lyz2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.844520
+</td>
+<td style="text-align:right;">
+0.995
+</td>
+<td style="text-align:right;">
+0.242
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ctss
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3.834287
+</td>
+<td style="text-align:right;">
+0.876
+</td>
+<td style="text-align:right;">
+0.147
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tpm3-rs7
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5.560479
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+<td style="text-align:right;">
+0.040
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fcer1g
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.362317
+</td>
+<td style="text-align:right;">
+0.832
+</td>
+<td style="text-align:right;">
+0.169
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tyrobp
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.496894
+</td>
+<td style="text-align:right;">
+0.832
+</td>
+<td style="text-align:right;">
+0.169
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Up
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="intersect-different-models" class="section level2">
+<h2>Intersect different models</h2>
+<div
+id="how-many-de-genes-in-mdx-mouse-compared-to-wt-are-also-differentially-regulated-in-mdxd2-compared-to-wt"
+class="section level3">
+<h3>How many DE genes in mdx mouse (compared to wt) are also
+differentially regulated in mdx/D2 (compared to wt)?</h3>
+<pre class="r"><code>library(ggVennDiagram)
+library(ggplot2)
+ggVennDiagram(list(
+  rownames(mdx_vs_wt_mouse_DEGs %&gt;% filter(regulation==&quot;Up&quot;)),
+  rownames(mdxD2_vs_wt_mouse_DEGs %&gt;% filter(regulation==&quot;Up&quot;))
+), label_alpha = 0,
+              label = &quot;count&quot;,
+              category.names = c(&quot;mdx vs. wt&quot;,
+                                 &quot;mdxD2 vs. wt&quot;)) +
+  scale_fill_gradient(low = &quot;white&quot;, high = &quot;orange&quot;) +
+  coord_cartesian(clip = &quot;off&quot;) +
+  theme(plot.margin = margin(1, 1, 1, 1, &quot;cm&quot;))</code></pre>
+<p><img src="project_3bis_find-common-genes_files/figure-html/mdx_mdxD2_intersect-1.png" width="480" /></p>
+</div>
+<div
+id="how-many-genes-are-consistently-upregulated-in-mdx-mouse-rat-and-hipsc-derived-organoid"
+class="section level3">
+<h3>How many genes are consistently upregulated in mdx mouse, rat, and
+hiPSC-derived organoid?</h3>
+<pre class="r"><code># Match uppercase for all DEG sets 
+x &lt;- list(
+  toupper((DMD_vs_WT_rat_DEGs %&gt;% filter(regulation==&quot;Up&quot;))$gene),
+  toupper((DMD_vs_IsoCTR_organoid %&gt;% filter(regulation==&quot;Up&quot;))$SYMBOL),
+  toupper((rownames(mdx_vs_wt_mouse_DEGs %&gt;% filter(regulation==&quot;Up&quot;)))),
+  toupper((rownames(mdxD2_vs_wt_mouse_DEGs %&gt;% filter(regulation==&quot;Up&quot;))))
+)
+
+ggVennDiagram(x, label_alpha = 0,
+              label = &quot;count&quot;,
+              category.names = c(&quot;Up in DMD rat&quot;,
+                                 &quot;Up in DMD human organoid&quot;,
+                                 &quot;Up in mdx mouse&quot;,
+                                 &quot;Up in mdx/D2 mouse&quot;)) +
+  scale_fill_gradient(low = &quot;white&quot;, high = &quot;orange&quot;) +
+  coord_cartesian(clip = &quot;off&quot;) +
+  theme(plot.margin = margin(1, 1, 1, 1, &quot;cm&quot;))</code></pre>
+<p><img src="project_3bis_find-common-genes_files/figure-html/models_intersection-1.png" width="672" /></p>
+<p><strong><em>Names of the common genes?</em></strong></p>
+<pre class="r"><code># Get common gene names found in all lists
+Reduce(intersect, x)</code></pre>
+<pre><code>## [1] &quot;BCAT1&quot; &quot;LTBP2&quot;</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+---
+title: "My practice sessions"
+output:
+  html_document:
+    toc: false
+---
+
+<br> <br>
+
+### Practice #1: RNA-seq analysis of DMD muscle organoids
+
+🔗 [Link to preprint](https://doi.org/10.1101/2023.07.26.550063)\
+🌼 [Link to session](project_1_dmd-organoid.html)
+
+------------------------------------------------------------------------
+
+### Practice #2: Single-cell RNA-seq of DMD rat model
+
+🔗 [Link to paper](https://doi.org/10.1186/s40478-022-01355-2)\
+🌼 [Link to session](project_2_dmd-rat.html)
+
+------------------------------------------------------------------------
+
+### Practice #3: Single-cell RNA-seq of healthy, mdx, and mdx/D2 mouse muscle
+
+🔗 [Link to paper](https://doi.org/10.1016/j.isci.2022.105415)\
+🌼 [Link to session](project_3_mdx-mdxD2-mice.html)
+
+### Practice #3bis: Finding common DE genes across different DMD models 
+
+🌼 [Link to session](project_3bis_find-common-genes.html)
+
+------------------------------------------------------------------------
+
+### Practice #4: Time-course single-cell RNA-seq analyis of regenerating mouse muscle
+
+🔗 [Link to paper](https://doi.org/10.1016/j.isci.2020.100993)\
+🌼 Link to session

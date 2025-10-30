@@ -1,0 +1,287 @@
+---
+title: "Time-course analyis of single-cell transcriptome in regenerating mouse muscle"
+bibliography: projects/project_4/references.bib
+nocite: '@*'
+output:
+  html_document:
+    code_folding: hide
+    css: assets/style_table.css
+---
+
+> **Date:** 19/10/2025
+>
+> **Description:** [Oprescu et al. (2020)](https://doi.org/10.1016/j.isci.2020.100993) performed RNA-seq of single cells derived from non-injured and from injured mouse skeletal muscles at 6 regenerative time point: 0.5, 2, 3.5, 5, 10, and 21 days post-injury (DPI). N = 3 biological replicates were obtained for each condition, and samples were pooled altogether for cell sorting, during which aggregated and/or dead cells were excluded.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## Expression matrix
+
+`regen_data` is a list of two `AnnotatedDataFrame` objects. `regen_data$RNA` contains both the **raw count** table (slot `data`) and the **metadata** table (slot `varMetadata`). `regen_data$SCT` contains SCT normalized expression values.
+
+```{r load_expr_matrix}
+regen_data <- readRDS("~/project_4_mouse-muscle-regen-single-cell/GSE138826_regen_data.rds")
+
+# Extract raw count matrix
+# regen_data$RNA@data not safe to use --> work with matrix file instead
+library(data.table)
+expr_mat <- fread("~/project_4_mouse-muscle-regen-single-cell/GSE138826_expression_matrix.txt.gz")
+expr_mat <- as.data.frame(expr_mat)
+rownames(expr_mat) <- expr_mat[, 1] # first column as rownames
+expr_mat <- expr_mat[, -1]          # remove 1st column
+
+# Extract metadata
+cell_meta <- regen_data$RNA@varMetadata
+```
+
+```{r echo=FALSE}
+library(dplyr)
+knitr::kable(expr_mat[1:5,1:5], caption = "Raw count matrix: genes as rows, samples as columns") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+knitr::kable(head(cell_meta), caption = "Metadata table") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+Column names of expression matrix and row names of metadata table need to match:
+
+```{r match_colnames_rownames}
+# Fix expression matrix column names
+colnames(expr_mat) <- colnames(expr_mat) |>
+  gsub("^X", "", x = _) |>           # remove leading X
+  gsub("\\.", " ", x = _) |>         # replace dots with spaces
+  gsub("  ", " ", x = _) |>          # collapse double spaces
+  gsub(" ", "_", x = _)              # replace spaces with underscores
+
+# Fix metadata row names
+rownames(cell_meta) <- rownames(cell_meta) |>
+  gsub("\\.", " ", x = _) |>        # replace dots with spaces
+  gsub("  ", " ", x = _) |>         # collapse double spaces
+  gsub(" ", "_", x = _)             # replace spaces with underscores
+```
+
+```{r check_names_matched}
+# Fix colnames/rownames until matched
+all(colnames(expr_mat) == rownames(cell_meta))
+```
+
+Now that the expression matrix and metadata are aligned, we're ready to make a Seurat object.
+
+## Create Seurat object
+
+```{r create_seurat_obj, echo=TRUE}
+library(Seurat)
+library(ggplot2)
+library(patchwork)
+
+# Make metadata cells (rows) the same order as expression matrix columns
+cell_meta <- cell_meta[colnames(expr_mat), ]
+
+# Create Seurat object
+regen_seurat <- CreateSeuratObject(
+  counts = expr_mat,
+  meta.data = cell_meta,
+  project = "mouse_muscle_regen"
+)
+
+regen_seurat
+```
+
+## Quality check
+
+```{r seurat_QC, fig.height=12, fig.width=18}
+regen_seurat[["percent.mt"]] <- PercentageFeatureSet(regen_seurat, pattern = "^mt-")
+
+# Reorder timepoint
+regen_seurat$timepoint <- factor(
+  regen_seurat$timepoint,
+  levels = c("0_5dpi", "2dpi", "3_5dpi", "5dpi", "10dpi", "21dpi", "non-inj")
+)
+
+p1 <- VlnPlot(regen_seurat, group.by = "timepoint",
+              features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, pt.size = 0.1)
+p2 <- FeatureScatter(regen_seurat, group.by = "timepoint", pt.size = 0.1,
+                     feature1 = "nCount_RNA", feature2 = "percent.mt")
+p3 <- FeatureScatter(regen_seurat, group.by = "timepoint", pt.size = 0.1,
+                     feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+p1 / (p2 + p3)
+```
+
+## Seurat workflow
+
+```{r fig.height=11, fig.width=15}
+regen_seurat <- NormalizeData(regen_seurat, verbose = FALSE) %>% 
+  FindVariableFeatures(selection.method = "vst", nfeatures = 3000, verbose = FALSE) %>% 
+  ScaleData(verbose = FALSE) %>% 
+  RunPCA(npcs = 50, reduction.name = "RNA_pca", verbose = FALSE) %>% 
+  FindNeighbors(reduction = "RNA_pca", dims = 1:20, graph.name = "RNA_snn", verbose = FALSE) %>% 
+  FindClusters(graph.name = "RNA_snn", resolution = 0.5, verbose = FALSE) %>% 
+  RunUMAP(reduction = "RNA_pca", dims = 1:20, reduction.name = "RNA_umap", verbose = FALSE)
+
+p1 <- DimPlot(regen_seurat, reduction = "RNA_umap", group.by = "RNA_snn_res.0.5", label = T) + NoLegend() + ggtitle("New clustering")
+p2 <- DimPlot(regen_seurat, reduction = "RNA_umap", group.by = "cluster") + ggtitle("Paper's clustering")
+p3 <- DimPlot(regen_seurat, reduction = "RNA_umap", group.by = "metacluster") + ggtitle("Paper's meta-clusters")
+
+design <- "
+AB
+-C
+"
+
+wrap_plots(p1, p2, p3, design = design, widths = c(1, 1), heights = c(1, 1))
+```
+
+## Cell type composition
+
+```{r cell_type_number, echo=FALSE}
+# Count number of cells per cluster per timepoint
+n_cells <- FetchData(regen_seurat, vars = c("metacluster", "timepoint")) %>%         
+  dplyr::count(metacluster, timepoint) %>% tidyr::spread(metacluster, n)
+# View table 
+knitr::kable(n_cells, caption = "Number of each cell type in each condition") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+```{r cell_type_fraction, fig.height=10, fig.width=20}
+# cell type fraction in each condition
+comp_df <- regen_seurat@meta.data %>%
+  dplyr::count(timepoint, metacluster) %>%
+  group_by(timepoint) %>%
+  mutate(freq = n / sum(n))
+
+p1 <- ggplot(comp_df, aes(x = timepoint, y = freq, fill = metacluster)) +
+  geom_bar(stat = "identity", position = "fill", color = "black", linewidth = 0.3) +
+  geom_text(aes(label = scales::percent(freq, accuracy = 0.1)),
+            position = position_fill(vjust = 0.5), size = 2) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(y = "fraction of cells [%]", x = "") +
+  theme_classic()
+
+p2 <- DimPlot(regen_seurat, reduction = "RNA_umap", group.by = "metacluster", split.by = "timepoint") + theme(legend.position = "bottom")
+
+(p1 + plot_spacer()) /
+p2 +
+  plot_layout(widths = c(0.3, 1), heights = c(1.2, 1))
+```
+
+## Mesenchymal sub-clusters
+
+```{r mesenchymal_subclus, fig.height=6, fig.width=10}
+Idents(regen_seurat) <- regen_seurat$metacluster
+p1 <- DimPlot(
+  regen_seurat,
+  reduction = "RNA_umap",
+  group.by = "metacluster",
+  cells.highlight = list(
+    "FAPs" = WhichCells(regen_seurat, idents = "FAPs"),
+    "Fibroblasts" = WhichCells(regen_seurat, idents = "Fibroblasts"),
+    "Tenocytes" = WhichCells(regen_seurat, idents = "Tenocytes")
+  ),
+  sizes.highlight = 0.1,
+  cols.highlight = viridis::viridis(3, option = "D"),
+  cols = "lightgrey", pt.size = 0.5
+) + ggtitle("Mesenchymal population") + theme(legend.position = "bottom")
+
+Idents(regen_seurat) <- regen_seurat$cluster
+p2 <- DimPlot(
+  regen_seurat,
+  reduction = "RNA_umap",
+  group.by = "cluster",
+  cells.highlight = list(
+    "ActivatedFAPs" = WhichCells(regen_seurat, idents = "ActivatedFAPs"),
+    "Dpp4_FAPs" = WhichCells(regen_seurat, idents = "Dpp4_FAPs"),
+    "Osr1_FAPs" = WhichCells(regen_seurat, idents = "Osr1_FAPs"),
+    "Wisp1_FAPs" = WhichCells(regen_seurat, idents = "Wisp1_FAPs"),
+    "Dlk1_FAPs" = WhichCells(regen_seurat, idents = "Dlk1_FAPs"),
+    "Cxcl14_FAPs" = WhichCells(regen_seurat, idents = "Cxcl14_FAPs"),
+    "Tenocytes" = WhichCells(regen_seurat, idents = "Tenocytes"),
+    "Fibroblasts" = WhichCells(regen_seurat, idents = "Fibroblasts")
+  ),
+  sizes.highlight = 0.1,
+  cols.highlight = viridis::viridis(8, option = "D"),
+  cols = "lightgrey", pt.size = 0.5) + 
+  ggtitle("Mesenchymal population:\nFAP sub-clusters") + 
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(ncol = 3, nrow = 3))
+
+p1 + plot_spacer() + p2 + plot_layout(widths = c(1, 0.1, 1))
+```
+
+```{r}
+DotPlot(regen_seurat,
+  group.by='metacluster',
+  assay='RNA',
+  dot.scale = 5,
+  features=c("Pdlim5", "Adamtsl2", "Setdb1", "Emilin1", "Comp", "Pdgfra")) + 
+  # NoLegend() +
+  scale_color_viridis_c() +
+  theme(
+    axis.line = element_blank(),
+    panel.border = element_rect(colour = "black", fill=NA, size=1),
+    axis.title = element_blank(), 
+    axis.text.x=element_text(angle = 90,hjust = 1,vjust= 0.5),
+    axis.text.y = element_text(size = 6),
+    panel.grid.major = element_line(colour = "gray", size = 0.5
+    )
+  ) + coord_flip()
+```
+
+```{r TRIAGE_test}
+# a temporary library path with more space
+tmp_lib <- file.path("/shared/projects/big_data_psaclay/minh")
+
+install.packages("reticulate", lib = tmp_lib)
+install.packages("data.table", lib = tmp_lib)
+install.packages("pheatmap", lib = tmp_lib)
+
+reticulate::use_python("/shared/ifbstor1/software/miniconda/bin/python", required = TRUE)
+reticulate::py_config()
+
+library(TRIAGE, lib.loc = tmp_lib)
+library(reticulate, lib.loc = tmp_lib)
+
+Sys.setenv(
+  CONDA_PKGS_DIRS = "/shared/projects/big_data_psaclay/minh/conda_pkgs",
+  PIP_CACHE_DIR   = "/shared/projects/big_data_psaclay/minh/pip_cache",
+  TMPDIR          = "/shared/projects/big_data_psaclay/minh/tmp"
+)
+
+reticulate::use_condaenv("/shared/projects/big_data_psaclay/minh/r-reticulate", required = TRUE)
+reticulate::py_install("pandas", envname = "/shared/projects/big_data_psaclay/minh/r-reticulate")
+
+express_mat <- as.matrix(regen_seurat@assays$RNA@layers$data)
+rownames(express_mat) <- rownames(regen_seurat)
+colnames(express_mat) <- colnames(regen_seurat)
+
+# write expression matrix and metadata to csv files
+write.csv(express_mat, file = "/shared/projects/big_data_psaclay/minh/express_mat.csv", row.names = TRUE, quote = FALSE)
+
+umap_coords <- as.data.frame(regen_seurat@reductions$RNA_umap@cell.embeddings)
+colnames(umap_coords) <- c("UMAP_1", "UMAP_2")
+metadata <- cbind(regen_seurat@meta.data, umap_coords[rownames(regen_seurat@meta.data), ])
+metadata$cellID <- metadata$cellID |>
+  gsub(" ", "_", x = _) |>         # replace spaces with underscores
+  gsub("\\.", "_", x = _) |>       # replace dots with underscores
+  trimws()                         # remove accidental leading/trailing spaces
+
+sum(metadata$cellID %in% colnames(express_mat))
+
+write.csv(metadata, file = "/shared/projects/big_data_psaclay/minh/metadata.csv", row.names = TRUE, quote = FALSE)
+
+TRIAGEcluster(
+  expr = "/shared/projects/big_data_psaclay/minh/express_mat.csv", 
+  metadata = "/shared/projects/big_data_psaclay/minh/metadata.csv", 
+  outdir = "/shared/projects/big_data_psaclay/minh/TRIAGEoutput", 
+  output_prefix = "TRIAGEdemo", 
+  cell_column = "cellID", min_cells_per_peak = 1)
+
+
+
+expr <- read.csv("/shared/projects/big_data_psaclay/minh/express_mat.csv", row.names = 1)
+meta <- read.csv("/shared/projects/big_data_psaclay/minh/metadata.csv")
+
+# Match cells
+matched <- metadata[metadata$cellID %in% colnames(expr), ]
+nrow(matched)  # should equal ncol(expr)
+
+```

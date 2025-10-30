@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>RNA-seq analysis of DMD muscle organoids</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="assets/style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Minh's Notebook</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Resume
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="aboutme.html">About Minh</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="projects.html">My practice sessions</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="contact.html">Contact</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://meanwhy22.github.io/my-first-website/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">RNA-seq analysis of DMD muscle
+organoids</h1>
+
+</div>
+
+
+<blockquote>
+<p><strong>Date:</strong> 18/10/2025</p>
+<p><strong>Description:</strong> <a
+href="https://www.biorxiv.org/content/10.1101/2023.07.26.550063v4">Palmieri
+et al. (2025)</a> generated an organoid-like structure from DMD muscle
+cells (derived from patient iPSCs) co-cultured with fibroblasts. This
+dataset contains <strong>12 samples</strong> of <strong>3
+conditions</strong>: IsoCTR, Untreated (disease), and Treated (disease
+treated with high dose of AAV gene therapy). Each condition includes
+<strong>4 biological replicates</strong>. Raw data are retrieved from
+the NCBI Bioproject database under accession PRJNA1208956.</p>
+</blockquote>
+<div id="from-fastq-files-to-count-table" class="section level2">
+<h2>From FASTQ files to count table</h2>
+<details>
+<summary>
+<strong>Retrieve fastq files from database</strong>
+</summary>
+<pre class="bash"><code># Get table from ENA API
+# This table contains the links to all raw fastq files
+
+curl -s &quot;https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA1208956&amp;result=read_run&amp;fields=run_accession,fastq_ftp&quot; &gt; ena_runs.txt
+
+# Download all files
+# Paired-end reads ==&gt; 2 fastq files for each sample
+
+awk -F&#39;\t&#39; &#39;NR&gt;1 {print $2}&#39; ena_runs.txt | tr &#39;;&#39; &#39;\n&#39; | while read url; do
+    wget ftp://$url
+done</code></pre>
+</details>
+<details>
+<summary>
+<strong>Quality control of raw reads</strong>
+</summary>
+<p>Raw fastq files are imported into <a
+href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC</a>
+for some quality control checks. In return, we receive an HTML-based
+report on each fastq file.</p>
+<pre class="bash"><code># module load fastqc
+# mkdir -p reads_qc
+
+for sample in fastq_files/*.fastq.gz
+do
+  base=$(basename $sample .fastq.gz)
+  fastqc &quot;fastq_files/$base.fastq.gz&quot; --outdir reads_qc
+done</code></pre>
+<p>Looks like the adapters haven’t been cut. We’ll use <a
+href="https://github.com/OpenGene/fastp"><code>fastp</code></a>, an
+all-in-one fastq file preprocessor, for this job.</p>
+<pre class="bash"><code># module load fastp
+# mkdir -p clean_reads
+
+for sample in fastq_files/*_1.fastq.gz
+do
+    base=$(basename &quot;$sample&quot; _1.fastq.gz)
+
+    fastp \
+        -i &quot;fastq_files/${base}_1.fastq.gz&quot; \
+        -I &quot;fastq_files/${base}_2.fastq.gz&quot; \
+        -o &quot;clean_reads/${base}_1_clean.fastq.gz&quot; \
+        -O &quot;clean_reads/${base}_2_clean.fastq.gz&quot; \
+        -h &quot;clean_reads/${base}_fastp.html&quot; \
+        -j &quot;clean_reads/${base}_fastp.json&quot; \
+        -w 12     # run one sample at a time using 12 threads
+done</code></pre>
+<div class="line-block">Note: If the job keeps crashing, try to do half
+the number of samples until sorted BAM, delete fastq files, then proceed
+the other half.</div>
+<p>Check folder size regularly:</p>
+<pre class="bash"><code>du -sh /shared/home/minhytran/* | sort -h</code></pre>
+</details>
+<details>
+<summary>
+<strong>Read mapping to reference genome</strong>
+</summary>
+<p>Prior to alignment, we need to download human reference genome
+(GRCh38/hg38) and index it.</p>
+<pre class="bash"><code># Download reference genome
+curl -o ref_genome/GCF_000001405.40_GRCh38.p14_genomic.fna.gz \
+https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+
+# To decompress fasta file :
+# gunzip GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+
+
+# Build genome indexes :
+# module load hisat2
+# mkdir -p ref_genome/index_hisat2 
+hisat2-build ref_genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa \
+ref_genome/index_hisat2/human</code></pre>
+<p>Now we’ll map the (paired) reads to the reference. Remember to use
+‘clean’ fastq files. To avoid crashing the alignment, directly output
+sorted BAM files (skip SAM and unsorted BAM).</p>
+<pre class="bash"><code># module load hisat2 samtools
+# mkdir -p reads_mapping
+
+for sample in clean_reads/SRR3207614*_1_clean.fastq.gz 
+do 
+  
+  base=$(basename &quot;$sample&quot; _1_clean.fastq.gz)
+  
+  hisat2 -q -p 12 \
+  --summary-file &quot;./reads_mapping/summary_${base}.txt&quot; \
+  -x &quot;./ref_genome/index_hisat2/human&quot; \
+  -1 &quot;./clean_reads/${base}_1_clean.fastq.gz&quot; \
+  -2 &quot;./clean_reads/${base}_2_clean.fastq.gz&quot; \
+| samtools sort -@ 12 -o ./reads_mapping/${base}.sorted.bam
+  
+done</code></pre>
+</details>
+<details>
+<summary>
+<strong>Manipulate SAM/BAM file with Samtools</strong>
+</summary>
+<ul>
+<li><p>Convert SAM to BAM file (binary format) → save space (done
+previously)</p></li>
+<li><p>BAM files need to be <em>sorted</em> (done previously) and
+<em>indexed</em></p></li>
+</ul>
+<pre class="bash"><code># module load samtools
+
+for sample in reads_mapping/*.sorted.bam
+do 
+  base=$(basename &quot;$sample&quot; .sorted.bam)
+  
+  # Index sorted BAM
+  samtools index &quot;reads_mapping/${base}.sorted.bam&quot;
+
+done</code></pre>
+</details>
+<details>
+<summary>
+<strong>Generate count table</strong>
+</summary>
+<p>Now we’ll pass all the sorted, indexed BAM files through
+<code>featureCounts</code> function (subread package) to generate the
+count matrix. We also need an annotation file to do this. Parameters
+<code>-t "exon" -g gene_id</code> are to count reads mapped to exon then
+summarize to gene-level (i.e. many exons belong to single gene id).</p>
+<pre class="bash"><code># Download annotation file (.gtf)
+wget ftp://ftp.ensembl.org/pub/release-100/gtf/homo_sapiens/Homo_sapiens.GRCh38.100.gtf.gz
+# Unzip (then move to ref_genome folder)
+gunzip Homo_sapiens.GRCh38.100.gtf.gz
+
+# module load subread
+# Remember -p to tell featureCounts that BAM files contain paired-end reads
+
+featureCounts -a ./ref_genome/Homo_sapiens.GRCh38.100.gtf \
+-s 0 -t &quot;exon&quot; -g gene_id \
+-p --countReadPairs \
+-o ./count_matrix.counts \
+./reads_mapping/SRR*.sorted.bam</code></pre>
+</details>
+<p>Now we can read the <strong>count matrix</strong> into R:</p>
+<pre class="r"><code># Read count table
+count_tab &lt;- read.table(file = &quot;./projects/project_1/dmd-organoid_count_matrix.counts&quot;,
+                        header = TRUE,
+                        row.names = 1,
+                        sep = &quot;\t&quot;,
+                        comment.char = &quot;#&quot;)
+
+# Clean column names
+colnames(count_tab) &lt;- gsub(&quot;^.*\\/&quot;, &quot;&quot;, 
+                         colnames(count_tab))    # to match everything from the start of the string up to and including the last slash /
+
+colnames(count_tab) &lt;- gsub(&quot;\\.sorted\\.bam$&quot;, &quot;&quot;, 
+                         colnames(count_tab))    # drop &quot;.sorted.bam&quot;
+
+colnames(count_tab) &lt;- gsub(&quot;^\\.\\.reads_mapping\\.&quot;, &quot;&quot;, 
+                            colnames(count_tab)) # from the start, drop &quot;..reads_mapping&quot;
+
+colnames(count_tab)</code></pre>
+<pre><code>##  [1] &quot;Chr&quot;         &quot;Start&quot;       &quot;End&quot;         &quot;Strand&quot;      &quot;Length&quot;     
+##  [6] &quot;SRR32076135&quot; &quot;SRR32076136&quot; &quot;SRR32076137&quot; &quot;SRR32076138&quot; &quot;SRR32076139&quot;
+## [11] &quot;SRR32076140&quot; &quot;SRR32076141&quot; &quot;SRR32076142&quot; &quot;SRR32076143&quot; &quot;SRR32076144&quot;
+## [16] &quot;SRR32076145&quot; &quot;SRR32076146&quot;</code></pre>
+<pre class="r"><code># Drop annotation columns and keep the counts only
+count_tab &lt;- count_tab[, -c(1:5)]</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Count table: genes as rows, samples as columns
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+SRR32076135
+</th>
+<th style="text-align:right;">
+SRR32076136
+</th>
+<th style="text-align:right;">
+SRR32076137
+</th>
+<th style="text-align:right;">
+SRR32076138
+</th>
+<th style="text-align:right;">
+SRR32076139
+</th>
+<th style="text-align:right;">
+SRR32076140
+</th>
+<th style="text-align:right;">
+SRR32076141
+</th>
+<th style="text-align:right;">
+SRR32076142
+</th>
+<th style="text-align:right;">
+SRR32076143
+</th>
+<th style="text-align:right;">
+SRR32076144
+</th>
+<th style="text-align:right;">
+SRR32076145
+</th>
+<th style="text-align:right;">
+SRR32076146
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ENSG00000186092
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000284733
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000284662
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000187634
+</td>
+<td style="text-align:right;">
+414
+</td>
+<td style="text-align:right;">
+289
+</td>
+<td style="text-align:right;">
+107
+</td>
+<td style="text-align:right;">
+437
+</td>
+<td style="text-align:right;">
+242
+</td>
+<td style="text-align:right;">
+375
+</td>
+<td style="text-align:right;">
+337
+</td>
+<td style="text-align:right;">
+138
+</td>
+<td style="text-align:right;">
+419
+</td>
+<td style="text-align:right;">
+345
+</td>
+<td style="text-align:right;">
+117
+</td>
+<td style="text-align:right;">
+111
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000188976
+</td>
+<td style="text-align:right;">
+2342
+</td>
+<td style="text-align:right;">
+2056
+</td>
+<td style="text-align:right;">
+1091
+</td>
+<td style="text-align:right;">
+2672
+</td>
+<td style="text-align:right;">
+1551
+</td>
+<td style="text-align:right;">
+2108
+</td>
+<td style="text-align:right;">
+2394
+</td>
+<td style="text-align:right;">
+3062
+</td>
+<td style="text-align:right;">
+2306
+</td>
+<td style="text-align:right;">
+2449
+</td>
+<td style="text-align:right;">
+1196
+</td>
+<td style="text-align:right;">
+2706
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000187961
+</td>
+<td style="text-align:right;">
+627
+</td>
+<td style="text-align:right;">
+557
+</td>
+<td style="text-align:right;">
+259
+</td>
+<td style="text-align:right;">
+643
+</td>
+<td style="text-align:right;">
+361
+</td>
+<td style="text-align:right;">
+502
+</td>
+<td style="text-align:right;">
+642
+</td>
+<td style="text-align:right;">
+563
+</td>
+<td style="text-align:right;">
+594
+</td>
+<td style="text-align:right;">
+559
+</td>
+<td style="text-align:right;">
+278
+</td>
+<td style="text-align:right;">
+495
+</td>
+</tr>
+</tbody>
+</table>
+<p>And <strong>metadata</strong> file:</p>
+<pre class="r"><code>library(readxl)
+metadata &lt;- read_excel(&quot;./projects/project_1/dmd-organoid_metadata.xlsx&quot;)
+meta &lt;- as.data.frame(metadata[,c(1,3)]) # keep 2 columns: sample and sample_type
+meta$sample_type &lt;- factor(meta$sample_type) # sample_type as factor
+
+# sample names have to be rownames
+rownames(meta) &lt;- meta$sample
+meta$sample &lt;- NULL
+
+# Map row names (sample names) from meta to column names of count table
+name_map &lt;- setNames(metadata$sample, metadata$sample_id)
+colnames(count_tab) &lt;- name_map[colnames(count_tab)]
+
+# Reorder meta to match the order of columns in count table
+meta &lt;- meta[colnames(count_tab), , drop=FALSE]
+
+# Check if it&#39;s good to go
+all(rownames(meta) == colnames(count_tab))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Sample metadata
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+sample_type
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-high-1
+</td>
+<td style="text-align:left;">
+Treated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-high-2
+</td>
+<td style="text-align:left;">
+Treated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+corrDMDdEx8-9-4
+</td>
+<td style="text-align:left;">
+IsoCTR
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-1
+</td>
+<td style="text-align:left;">
+Untreated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-2
+</td>
+<td style="text-align:left;">
+Untreated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-3
+</td>
+<td style="text-align:left;">
+Untreated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-4
+</td>
+<td style="text-align:left;">
+Untreated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+corrDMDdEx8-9-3
+</td>
+<td style="text-align:left;">
+IsoCTR
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-high-4
+</td>
+<td style="text-align:left;">
+Treated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DMDdEx8-9-high-3
+</td>
+<td style="text-align:left;">
+Treated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+corrDMDdEx8-9-2
+</td>
+<td style="text-align:left;">
+IsoCTR
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+corrDMDdEx8-9-1
+</td>
+<td style="text-align:left;">
+IsoCTR
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="differential-expression-analysis-with-deseq2"
+class="section level2">
+<h2>Differential expression analysis with DESeq2</h2>
+<div id="create-deseqdataset-object" class="section level3">
+<h3>Create DESeqDataSet object</h3>
+<p>DESeq2 expects a raw count matrix as input. The model will internally
+correct for library size. Remember that
+<code>nrow(colData) == ncol(countData)</code>.</p>
+<pre class="r"><code>library(DESeq2)
+dds &lt;- DESeqDataSetFromMatrix(
+  countData = count_tab, 
+  colData = meta,
+  design = ~ sample_type)
+dds</code></pre>
+<pre><code>## class: DESeqDataSet 
+## dim: 20420 12 
+## metadata(1): version
+## assays(1): counts
+## rownames(20420): ENSG00000186092 ENSG00000284733 ... ENSG00000277475
+##   ENSG00000268674
+## rowData names(0):
+## colnames(12): DMDdEx8-9-high-1 DMDdEx8-9-high-2 ... corrDMDdEx8-9-2
+##   corrDMDdEx8-9-1
+## colData names(1): sample_type</code></pre>
+</div>
+<div id="filter-low-count-genes" class="section level3">
+<h3>Filter low-count genes</h3>
+<p>Here we’re keeping only genes that have at least 10 read counts in at
+least 4 samples. The mean-sd plot suggests that variance is stabilized,
+meaning genes with low and high mean counts all have similar
+variances.</p>
+<pre class="r"><code>smallestGroupSize &lt;- 4
+keep &lt;- rowSums(counts(dds) &gt;= 10) &gt;= smallestGroupSize
+dds_filt &lt;- dds[keep,]
+
+library(vsn)
+vsd &lt;- vst(dds_filt)
+meanSdPlot(assay(vsd))</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/gene_filtering-1.png" width="576" /></p>
+</div>
+<div id="data-quality-control-by-clustering-samples"
+class="section level3">
+<h3>Data quality control by clustering samples</h3>
+<p>For differential gene expression (DEG) analysis, DESeq2 operates
+directly on the raw counts. However, for clustering and visualization,
+we better use <em>normalized</em> and <em>transformed</em> expression
+values. DESeq2 uses a normalization method called <strong>median of
+ratios</strong>.</p>
+<div class="line-block">Note: We have to run DEG analysis to add
+normalization factors (since it’s an all-in-one function)</div>
+<pre class="r"><code># DESeqDataSet object does not store a matrix of normalized counts by default
+# We can to get it by: counts(dds, normalized=TRUE)
+dds_filt &lt;- DESeq(dds_filt)
+
+select_top_genes &lt;- order(rowMeans(counts(dds_filt, normalized=TRUE)), # mean of normalized counts of each gene across samples                 
+                                     decreasing=TRUE)[1:50] # select top 50 genes with highest mean expression  
+
+df &lt;- as.data.frame(colData(dds_filt)[, &quot;sample_type&quot;, drop=FALSE])
+
+# log2 transformation of normalized counts 
+# pc = 1 is pseudocount ==&gt; log2(n + 1) 
+ntd &lt;- normTransform(dds_filt, f = log2, pc = 1)</code></pre>
+<p>This is a heatmap of top 50 highly expressed genes. Expression values
+are presented as normalized, log2-transformed counts and are row-scaled
+(so that mean expression of each gene across samples is 0). Here we see
+samples are clustered based on top gene expression.</p>
+<pre class="r"><code>library(&quot;pheatmap&quot;)
+pheatmap(assay(ntd)[select_top_genes,],          
+         scale = &quot;row&quot;, # z score     
+         cluster_rows=TRUE,           
+         show_rownames=TRUE,                    
+         cluster_cols=TRUE,           
+         annotation_col=df)</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/top_gene_heatmap-1.png" width="768" /></p>
+<p>We can make a heatmap of (euclidean) distances between each pair of
+samples. With this, we have an overall idea of how samples are similar
+to each other.</p>
+<pre class="r"><code>sampleDists &lt;- dist(t(assay(vsd)))  
+
+library(&quot;RColorBrewer&quot;) 
+
+sampleDistMatrix &lt;- as.matrix(sampleDists)
+colors &lt;- colorRampPalette(rev(brewer.pal(9, &quot;Blues&quot;)))(255) 
+
+pheatmap(sampleDistMatrix,          
+         clustering_distance_rows=sampleDists,    
+         clustering_distance_cols=sampleDists,          
+         col=colors)</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/dist_matrix_heatmap-1.png" width="768" /></p>
+<p>Another way to evaluate the batch effects is to plot the principle
+components of samples (PCA).</p>
+<pre class="r"><code>plotPCA(vsd, intgroup=&quot;sample_type&quot;, ntop=10000)</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/pca-1.png" width="480" /></p>
+</div>
+<div id="deg-analysis" class="section level3">
+<h3>DEG analysis</h3>
+<p><code>DESeq()</code> performs:</p>
+<ul>
+<li><p>estimation of size factors</p></li>
+<li><p>estimation of dispersion</p></li>
+<li><p>Negative Binomial GLM fitting and Wald statistics</p></li>
+</ul>
+<pre class="r"><code># If needed, set &#39;IsoCTR&#39; as baseline condition :
+# dds_filt$sample_type &lt;- relevel(dds_filt$sample_type, ref = &quot;IsoCTR&quot;)
+# dds_filt &lt;- DESeq(dds_filt)
+resultsNames(dds_filt) # names of the individual effects (coefficients)</code></pre>
+<pre><code>## [1] &quot;Intercept&quot;                       &quot;sample_type_Treated_vs_IsoCTR&quot;  
+## [3] &quot;sample_type_Untreated_vs_IsoCTR&quot;</code></pre>
+<p>p values are corrected by Benjamin-Hochberg with
+<code>alpha = 0.05</code>. <strong>How many genes were (significantly)
+up/down-regulated in ‘Treated’ compared to ‘IsoCTR’?</strong></p>
+<pre class="r"><code>Treated_vs_IsoCTR &lt;- results(dds_filt,
+                             name = &quot;sample_type_Treated_vs_IsoCTR&quot;,
+                             alpha = 0.05)
+summary(Treated_vs_IsoCTR)</code></pre>
+<pre><code>## 
+## out of 14658 with nonzero total read count
+## adjusted p-value &lt; 0.05
+## LFC &gt; 0 (up)       : 3771, 26%
+## LFC &lt; 0 (down)     : 4262, 29%
+## outliers [1]       : 3, 0.02%
+## low counts [2]     : 0, 0%
+## (mean count &lt; 5)
+## [1] see &#39;cooksCutoff&#39; argument of ?results
+## [2] see &#39;independentFiltering&#39; argument of ?results</code></pre>
+<p>For the volcano plot, we’ll use the full <code>results</code> table
+and highlight the significant hits. Be careful that there are genes
+where <code>padj</code> is missing due to independent filtering inside
+DESeq2 (prior to multiple testing correction) or
+<code>log2FoldChange</code> is missing if a gene has zero counts across
+all samples of one condition.</p>
+<details>
+<summary>
+<strong>Make a volcano plot of DEGs</strong>
+</summary>
+<pre class="r"><code># Libraries 
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
+library(tibble)
+
+# Prepare DEGs data frame
+Treated_vs_IsoCTR_DEGs &lt;- Treated_vs_IsoCTR %&gt;% 
+  as.data.frame() %&gt;% 
+  rownames_to_column(var = &quot;ENSEMBL&quot;) %&gt;% 
+  # Remove genes where log2FC or padj is missing
+  filter(!is.na(log2FoldChange), !is.na(padj))
+
+# Add column specifying Up/Down/NotSig genes
+Treated_vs_IsoCTR_DEGs$regulation &lt;- ifelse(
+  Treated_vs_IsoCTR_DEGs$padj &lt; 0.05 &amp; 
+    Treated_vs_IsoCTR_DEGs$log2FoldChange &gt; 1, &quot;Up&quot;,
+  ifelse( Treated_vs_IsoCTR_DEGs$padj &lt; 0.05 &amp;
+            Treated_vs_IsoCTR_DEGs$log2FoldChange &lt; -1, &quot;Down&quot;,
+          &quot;NotSig&quot;)
+  )
+  
+# Count up/down genes
+counts &lt;- Treated_vs_IsoCTR_DEGs %&gt;%
+  filter(regulation %in% c(&quot;Up&quot;,&quot;Down&quot;)) %&gt;%
+  group_by(regulation) %&gt;%
+  summarise(n = n(), .groups = &quot;drop&quot;) %&gt;%
+  tidyr::pivot_wider(names_from = regulation, values_from = n, values_fill = 0)
+
+# Volcano plot
+p &lt;- ggplot(data = Treated_vs_IsoCTR_DEGs,
+            aes(x = log2FoldChange,
+                y = -log10(padj))) +
+  geom_point(aes(col = regulation)) +
+  
+  # Add threshold lines
+  geom_hline(yintercept = -log10(0.05), 
+             col = &quot;black&quot;, 
+             linetype = &#39;dashed&#39;) +
+  
+  geom_vline(xintercept = c(-1, 1),
+           col = &quot;black&quot;,
+           linetype = &#39;dashed&#39;) +
+  
+  scale_color_manual(values = c(&quot;Down&quot;=&quot;#00AFBB&quot;,
+                                &quot;NotSig&quot;=&quot;grey&quot;,
+                                &quot;Up&quot;=&quot;#E41A1C&quot;),
+                     labels = c(&quot;Down&quot;=&quot;Downregulated&quot;, 
+                                &quot;NotSig&quot;=&quot;Not significant&quot;, 
+                                &quot;Up&quot;=&quot;Upregulated&quot;)) +
+  
+  labs(x = &quot;log2FC&quot;,
+       y = &quot;-log10(padj)&quot;,
+       color = &quot;Regulation&quot;, 
+       title = &quot;Treated vs IsoCTR&quot;) + 
+  theme_minimal() +
+  
+  # Annotate number of up/down genes on the plot 
+  annotate(&quot;text&quot;, x = max(Treated_vs_IsoCTR_DEGs$log2FoldChange, na.rm=TRUE), 
+           y = max(-log10(Treated_vs_IsoCTR_DEGs$padj), na.rm=TRUE), 
+           label = paste0(&quot;Up: &quot;, counts$Up), 
+           hjust = 1, vjust = 1, col = &quot;#E41A1C&quot;) +
+  
+  annotate(&quot;text&quot;, x = min(Treated_vs_IsoCTR_DEGs$log2FoldChange, na.rm=TRUE), 
+           y = max(-log10(Treated_vs_IsoCTR_DEGs$padj), na.rm=TRUE), 
+           label = paste0(&quot;Down: &quot;, counts$Down), 
+           hjust = 0, vjust = 1, col = &quot;#00AFBB&quot;)</code></pre>
+</details>
+<p><img src="project_1_dmd-organoid_files/figure-html/display_volcano_plot-1.png" width="672" /></p>
+<details>
+<summary>
+Save DEG list to file
+</summary>
+<pre class="r"><code># Save DEG list
+write.table(Treated_vs_IsoCTR_DEGs,
+            file = &quot;./projects/project_1/DEG_List_backup/Treated_vs_IsoCTR_DEGs.txt&quot;,
+            sep = &quot;\t&quot;,
+            quote = FALSE,
+            row.names = FALSE)</code></pre>
+</details>
+<p><strong>How many genes were (significantly) up/down-regulated in
+‘Untreated’ compared to ‘IsoCTR’?</strong></p>
+<pre class="r"><code>Untreated_vs_IsoCTR &lt;- results(dds_filt,
+                               name = &quot;sample_type_Untreated_vs_IsoCTR&quot;,
+                               alpha = 0.05)
+summary(Untreated_vs_IsoCTR)</code></pre>
+<pre><code>## 
+## out of 14658 with nonzero total read count
+## adjusted p-value &lt; 0.05
+## LFC &gt; 0 (up)       : 1933, 13%
+## LFC &lt; 0 (down)     : 2685, 18%
+## outliers [1]       : 3, 0.02%
+## low counts [2]     : 0, 0%
+## (mean count &lt; 5)
+## [1] see &#39;cooksCutoff&#39; argument of ?results
+## [2] see &#39;independentFiltering&#39; argument of ?results</code></pre>
+<p><strong>How many genes were (significantly) up/down-regulated in
+‘Treated’ compared to ‘Untreated’?</strong></p>
+<pre><code>## 
+## out of 14658 with nonzero total read count
+## adjusted p-value &lt; 0.05
+## LFC &gt; 0 (up)       : 315, 2.1%
+## LFC &lt; 0 (down)     : 389, 2.7%
+## outliers [1]       : 3, 0.02%
+## low counts [2]     : 285, 1.9%
+## (mean count &lt; 9)
+## [1] see &#39;cooksCutoff&#39; argument of ?results
+## [2] see &#39;independentFiltering&#39; argument of ?results</code></pre>
+</div>
+</div>
+<div id="crossing-deg-sets-venn-diagram" class="section level2">
+<h2>Crossing DEG sets: Venn diagram</h2>
+<p>We want to intersect 3 sets of DEGs:</p>
+<ul>
+<li><p><strong>Untreated vs IsoCTR:</strong> genes that are
+differentially expressed in DMD organoid compared to isogenic
+control</p></li>
+<li><p><strong>Treated vs Untreated:</strong> genes that are
+differentially expressed in AAV-treated DMD organoid compared to
+non-treated (presumably ‘corrected’ by gene therapy)</p></li>
+<li><p><strong>Treated vs IsoCTR:</strong> presumably ‘not corrected’ by
+gene therapy</p></li>
+</ul>
+<div class="line-block">Note: We can use
+<code>abs(log2FoldChange) &gt; 1</code> but it seems too strict.</div>
+<pre class="r"><code>x &lt;- list(
+  rownames(Untreated_vs_IsoCTR %&gt;% 
+             as.data.frame() %&gt;% 
+             filter(padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 0)),
+  rownames(Treated_vs_Untreated %&gt;% 
+             as.data.frame() %&gt;% 
+             filter(padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 0)),
+  rownames(Treated_vs_IsoCTR %&gt;% 
+             as.data.frame() %&gt;% 
+             filter(padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 0))
+)
+
+library(&quot;ggVennDiagram&quot;)
+ggVennDiagram(x, label_alpha = 0,
+              label = &quot;count&quot;,
+              category.names = c(&quot;Untreated\nvs IsoCTR&quot;,
+                                 &quot;Treated\nvs Untreated&quot;,
+                                 &quot;Treated\nvs IsoCTR&quot;)) +
+  
+  theme(plot.margin = margin(1, 4, 1, 4, &quot;cm&quot;),
+        text = element_text(size = 14)) +
+  
+  scale_fill_gradient(low = &quot;white&quot;, high = &quot;orange&quot;)</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/venn_diagram-1.png" width="960" /></p>
+</div>
+<div id="gene-set-enrichment-analysis-gsea" class="section level2">
+<h2>Gene Set Enrichment Analysis (GSEA)</h2>
+<p>Prior to GSEA, we need to create a <strong>ranked list</strong> of
+the genes.</p>
+<details>
+<summary>
+Tidy and save Treated_vs_Untreated DEG table
+</summary>
+<pre class="r"><code># Remove genes where log2FC or padj is missing
+# Make row names a column EMSEMBL
+
+Treated_vs_Untreated_DEGs &lt;- 
+  Treated_vs_Untreated %&gt;%
+  as.data.frame() %&gt;% 
+  filter(!is.na(log2FoldChange), !is.na(padj)) %&gt;% 
+  rownames_to_column(var = &quot;ENSEMBL&quot;)
+
+# Add column &#39;regulation&#39;
+Treated_vs_Untreated_DEGs$regulation &lt;-
+ifelse( Treated_vs_Untreated_DEGs$padj &lt; 0.05 &amp;
+          Treated_vs_Untreated_DEGs$log2FoldChange &gt; 1, &quot;Up&quot;,
+  ifelse( Treated_vs_Untreated_DEGs$padj &lt; 0.05 &amp;
+            Treated_vs_Untreated_DEGs$log2FoldChange &lt; -1, &quot;Down&quot;,
+          &quot;NotSig&quot;)
+)
+
+# Write the file
+write.table(Treated_vs_Untreated_DEGs,
+            file = &quot;./projects/project_1/DEG_List_backup/Treated_vs_Untreated_DEGs.txt&quot;,
+            sep = &quot;\t&quot;,
+            quote = FALSE,
+            row.names = FALSE)</code></pre>
+</details>
+<p>A bunch of ranking metrics can be used to rank the list of input
+genes. In the end, they should all correlate to the two phenotypes
+signatured by the gene set that we’re interested in.</p>
+<p>Here we’ll try using the <code>log2FoldChange</code> in DESeq2.</p>
+<div class="line-block">Using shrinkage of LFC estimates (toward 0) is
+to avoid inflation by genes with small counts/large standard
+errors.</div>
+<pre class="r"><code>Treat_vs_Untreated_DEGs &lt;-
+read.table(file = &quot;./projects/project_1/DEG_List/Treated_vs_Untreated_DEGs.txt&quot;,
+           header = TRUE, sep = &quot;\t&quot;)
+
+Treat_vs_Untreated_DEGs_ranked &lt;- Treat_vs_Untreated_DEGs %&gt;% 
+  arrange(desc(log2FoldChange)) %&gt;%
+  pull(log2FoldChange, name=ENSEMBL) # create named vector
+
+head(Treat_vs_Untreated_DEGs_ranked)</code></pre>
+<pre><code>## ENSG00000166450 ENSG00000169840 ENSG00000105810 ENSG00000274276 ENSG00000187553 
+##        1.739995        1.496896        1.495937        1.470676        1.470314 
+## ENSG00000163273 
+##        1.364892</code></pre>
+<p>The <strong>gene set</strong> of interest can be obtained via the <a
+href="https://www.gsea-msigdb.org/gsea/msigdb">Molecular Signatures
+Database (MSigDB)</a>.</p>
+<pre class="r"><code>library(msigdbr)
+GOBP_all &lt;- msigdbr(
+  species = &quot;Homo sapiens&quot;,
+  collection = &quot;C5&quot;,
+  subcollection = &quot;GO:BP&quot;
+) %&gt;% 
+  dplyr::select(gs_name, ensembl_gene)
+head(GOBP_all)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   gs_name                                          ensembl_gene   
+##   &lt;chr&gt;                                            &lt;chr&gt;          
+## 1 GOBP_10_FORMYLTETRAHYDROFOLATE_METABOLIC_PROCESS ENSG00000149313
+## 2 GOBP_10_FORMYLTETRAHYDROFOLATE_METABOLIC_PROCESS ENSG00000144908
+## 3 GOBP_10_FORMYLTETRAHYDROFOLATE_METABOLIC_PROCESS ENSG00000136010
+## 4 GOBP_10_FORMYLTETRAHYDROFOLATE_METABOLIC_PROCESS ENSG00000100714
+## 5 GOBP_10_FORMYLTETRAHYDROFOLATE_METABOLIC_PROCESS ENSG00000120254
+## 6 GOBP_2FE_2S_CLUSTER_ASSEMBLY                     ENSG00000183336</code></pre>
+<p>Running GSEA with all GOBP gene sets:</p>
+<pre class="r"><code>library(clusterProfiler)
+gsea_GOBP_all &lt;- GSEA(
+  Treat_vs_Untreated_DEGs_ranked,
+  TERM2GENE = GOBP_all,
+  pvalueCutoff = 0.05)
+
+# List of gene sets with significant enrichment
+head(gsea_GOBP_all@result, 10)$ID</code></pre>
+<pre><code>##  [1] &quot;GOBP_MITOTIC_SISTER_CHROMATID_SEGREGATION&quot;          
+##  [2] &quot;GOBP_SISTER_CHROMATID_SEGREGATION&quot;                  
+##  [3] &quot;GOBP_NEGATIVE_REGULATION_OF_CHROMOSOME_ORGANIZATION&quot;
+##  [4] &quot;GOBP_REGULATION_OF_CHROMOSOME_SEGREGATION&quot;          
+##  [5] &quot;GOBP_MITOTIC_CELL_CYCLE_CHECKPOINT_SIGNALING&quot;       
+##  [6] &quot;GOBP_DEFENSE_RESPONSE_TO_BACTERIUM&quot;                 
+##  [7] &quot;GOBP_CHROMOSOME_SEPARATION&quot;                         
+##  [8] &quot;GOBP_CHROMOSOME_SEGREGATION&quot;                        
+##  [9] &quot;GOBP_NUCLEAR_CHROMOSOME_SEGREGATION&quot;                
+## [10] &quot;GOBP_DNA_TEMPLATED_DNA_REPLICATION&quot;</code></pre>
+<pre class="r"><code>library(enrichplot)
+dotplot(gsea_GOBP_all, showCategory = 20,
+        color = &quot;NES&quot;) +
+  ggtitle(&quot;Top 20 enriched pathways&quot;)</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/dotplot-1.png" width="768" /></p>
+<details>
+<summary>
+<strong>How to see only terms that relate to “inflammation”?</strong>
+</summary>
+<pre class="r"><code># Subset result table for terms containing &quot;*inflam*&quot;
+inflam_terms &lt;- gsea_GOBP_all@result %&gt;%
+  filter(grepl(&quot;inflam&quot;, Description, ignore.case = TRUE))
+
+# Create a new gseaResult object
+gsea_GOBP_inflam &lt;- gsea_GOBP_all
+# The result table in this new object is the subset one
+gsea_GOBP_inflam@result &lt;- inflam_terms
+
+# Plot only &#39;*inflam*&#39;-related sets
+dotplot(gsea_GOBP_inflam, color = &quot;NES&quot;,
+        showCategory = nrow(inflam_terms)) +
+  ggtitle(&quot;Inflammation-related GO terms&quot;)</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/inflamm_GOBP-1.png" width="768" /></p>
+</details>
+<p>Plot enrichment score for terms/signatures that we’re particularly
+interested in:</p>
+<pre class="r"><code># Visualization
+library(patchwork)
+p1 &lt;- gseaplot2(gsea_GOBP_all, geneSetID = &quot;GOBP_POSITIVE_REGULATION_OF_INFLAMMATORY_RESPONSE&quot;,
+                            pvalue_table = TRUE)
+p1_list &lt;- wrap_plots(p1, ncol = 1,
+                      heights = c(1,0.2,0.5),
+                      align = &quot;v&quot;)
+
+p2 &lt;- gseaplot2(gsea_GOBP_all, geneSetID = &quot;GOBP_MICROTUBULE_ORGANIZING_CENTER_ORGANIZATION&quot;,
+                            pvalue_table = TRUE)
+p2_list &lt;- wrap_plots(p2, ncol = 1,
+                      heights = c(1,0.2,0.5),
+                      align = &quot;v&quot;)
+
+# Combine 2 plots
+library(cowplot)
+plot_grid(p1_list, p2_list, ncol = 1, align = &quot;v&quot;)</code></pre>
+<p><img src="project_1_dmd-organoid_files/figure-html/gsea_plot-1.png" width="576" /></p>
+</div>
+<div id="convert-ensembl-id-to-gene-symbol-optional"
+class="section level2">
+<h2>Convert ENSEMBL ID to gene symbol (optional)</h2>
+<p>There are many ways to get gene names based on Ensembl IDs. However,
+some IDs, usually corresponding to non-coding RNAs, do not match a gene
+symbol (from <a href="https://www.genenames.org/">HGNC</a> database). If
+we care only about protein-coding genes, maybe go back to
+<code>featureCounts</code> and consider reads that map CDS.</p>
+<ul>
+<li><p>Here we’ll try keeping the IDs as they are for those that don’t
+have a gene symbol.</p></li>
+<li><p>Same for IDs that match multiple gene symbols, we keep the
+Ensembl IDs to make it less ambiguous.</p></li>
+</ul>
+<details>
+<summary>
+<strong>Convert EMSEMBL ID to gene symbol</strong>
+</summary>
+<pre class="r"><code>library(org.Hs.eg.db)
+annots &lt;- AnnotationDbi::select(org.Hs.eg.db,
+                 
+                 # ensembl ids in count table
+                 keys=rownames(count_tab),
+                 
+                 columns=c(&quot;SYMBOL&quot;, &quot;GENENAME&quot;), 
+                 keytype=&quot;ENSEMBL&quot;)
+
+# Replace missing SYMBOL with the ENSEMBL ID
+annots$SYMBOL[is.na(annots$SYMBOL)] &lt;- annots$ENSEMBL
+
+# Collapse SYMBOL, but if &gt;1 SYMBOL, use the ENSEMBL ID instead
+annots &lt;- annots %&gt;%
+  group_by(ENSEMBL) %&gt;%
+  summarise(
+    SYMBOL = ifelse(n_distinct(SYMBOL) == 1,
+                    unique(SYMBOL),
+                    ENSEMBL)
+  )
+
+# Add &#39;SYMBOL&#39; column to DEG table
+Treated_vs_Untreated_DEGs_annot &lt;- Treated_vs_Untreated_DEGs %&gt;% left_join(annots, by = &quot;ENSEMBL&quot;)</code></pre>
+</details>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Treated_vs_Untreated DEG table with gene symbols
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+ENSEMBL
+</th>
+<th style="text-align:right;">
+baseMean
+</th>
+<th style="text-align:right;">
+log2FoldChange
+</th>
+<th style="text-align:right;">
+lfcSE
+</th>
+<th style="text-align:right;">
+stat
+</th>
+<th style="text-align:right;">
+pvalue
+</th>
+<th style="text-align:right;">
+padj
+</th>
+<th style="text-align:left;">
+regulation
+</th>
+<th style="text-align:left;">
+SYMBOL
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ENSG00000187634
+</td>
+<td style="text-align:right;">
+262.6958
+</td>
+<td style="text-align:right;">
+-0.0298865
+</td>
+<td style="text-align:right;">
+0.2634260
+</td>
+<td style="text-align:right;">
+-0.1134531
+</td>
+<td style="text-align:right;">
+0.9096714
+</td>
+<td style="text-align:right;">
+0.9665048
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+SAMD11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000188976
+</td>
+<td style="text-align:right;">
+2060.0851
+</td>
+<td style="text-align:right;">
+-0.0382775
+</td>
+<td style="text-align:right;">
+0.1034109
+</td>
+<td style="text-align:right;">
+-0.3701496
+</td>
+<td style="text-align:right;">
+0.7112710
+</td>
+<td style="text-align:right;">
+0.8819458
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+NOC2L
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000187961
+</td>
+<td style="text-align:right;">
+484.3473
+</td>
+<td style="text-align:right;">
+0.0274517
+</td>
+<td style="text-align:right;">
+0.1223824
+</td>
+<td style="text-align:right;">
+0.2243111
+</td>
+<td style="text-align:right;">
+0.8225153
+</td>
+<td style="text-align:right;">
+0.9309065
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+KLHL17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000188290
+</td>
+<td style="text-align:right;">
+1008.3230
+</td>
+<td style="text-align:right;">
+-0.2990822
+</td>
+<td style="text-align:right;">
+0.2779788
+</td>
+<td style="text-align:right;">
+-1.0759173
+</td>
+<td style="text-align:right;">
+0.2819643
+</td>
+<td style="text-align:right;">
+0.6450485
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+HES4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000187608
+</td>
+<td style="text-align:right;">
+255.1310
+</td>
+<td style="text-align:right;">
+-1.5477580
+</td>
+<td style="text-align:right;">
+0.4053978
+</td>
+<td style="text-align:right;">
+-3.8178745
+</td>
+<td style="text-align:right;">
+0.0001346
+</td>
+<td style="text-align:right;">
+0.0073547
+</td>
+<td style="text-align:left;">
+Down
+</td>
+<td style="text-align:left;">
+ISG15
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENSG00000188157
+</td>
+<td style="text-align:right;">
+7175.7911
+</td>
+<td style="text-align:right;">
+0.0467966
+</td>
+<td style="text-align:right;">
+0.3369123
+</td>
+<td style="text-align:right;">
+0.1388986
+</td>
+<td style="text-align:right;">
+0.8895303
+</td>
+<td style="text-align:right;">
+0.9592852
+</td>
+<td style="text-align:left;">
+NotSig
+</td>
+<td style="text-align:left;">
+AGRN
+</td>
+</tr>
+</tbody>
+</table>
+<p><br> <br></p>
+<hr />
+<p><strong>TUTORIALS</strong></p>
+<p><a
+href="https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html">Analyzing
+RNA-seq data with DESeq2</a></p>
+<p><strong>REFERENCES</strong></p>
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+<div id="ref-palmieri2023a" class="csl-entry">
+Palmieri, Laura, Louna Pili, Abbass Jaber, Ai Vu Hong, Matteo Marcello,
+Riyad El-Khoury, Guy Brochier, et al. 2023. <span>“Disease Exacerbation
+by Fibroblast Inclusion in Duchenne Muscular Dystrophy MYOrganoids
+Reveals Limitations of Microdystrophin Therapeutic Efficacy.”</span> <a
+href="http://dx.doi.org/10.1101/2023.07.26.550063">http://dx.doi.org/10.1101/2023.07.26.550063</a>.
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

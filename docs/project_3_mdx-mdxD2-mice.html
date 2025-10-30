@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Single-cell RNA-seq analysis of wildtype, mdx, and mdx/D2 mice</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="assets/style_table.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Minh's Notebook</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Resume
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="aboutme.html">About Minh</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="projects.html">My practice sessions</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="contact.html">Contact</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://meanwhy22.github.io/my-first-website/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Single-cell RNA-seq analysis of wildtype,
+mdx, and mdx/D2 mice</h1>
+
+</div>
+
+
+<blockquote>
+<p><strong>Date:</strong> 19/10/2025</p>
+<p><strong>Description:</strong> <a
+href="https://doi.org/10.1016/j.isci.2022.105415">Saleh et al (2022)</a>
+performed RNA-seq on single-cell suspensions from muscles of
+<strong>healthy (wt-NSG)</strong>, <strong>dystrophic
+(mdx-NSG)</strong>, and <strong>severely dystrophic (mdxD2-NSG)</strong>
+mouse. For each mouse model, N = 2 muscle samples were included. 10X
+count matrices are available in the NCBI Gene Expresson Omnibus under
+accession GSE213925.</p>
+</blockquote>
+<pre class="r"><code># Load libs ----
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(Seurat)
+library(stringr)
+library(Matrix)
+library(harmony)
+
+# For plotting ----
+library(circlize)
+library(patchwork)
+library(ggplot2)
+library(viridis)
+library(scCustomize)
+library(ComplexHeatmap)</code></pre>
+<div id="data-loading" class="section level2">
+<h2>DATA LOADING</h2>
+<p>Make sure that we have 3 files <strong>(1) barcodes.tsv</strong>,
+<strong>(2) features.tsv</strong> (or genes.tsv) and <strong>(3)
+matrix.mtx</strong> for each sample; placed in a separate subfolder.</p>
+<p><strong>Create Seurat object for each sample</strong></p>
+<pre class="r"><code># list all folders (1 folder = 1 muscle sample)
+samples &lt;- list.dirs(c(&quot;~/project_3_mdx-mdxD2-mice/wtNSG01&quot;, &quot;~/project_3_mdx-mdxD2-mice/wtNSG02&quot;, &quot;~/project_3_mdx-mdxD2-mice/mdxNSG01&quot;, &quot;~/project_3_mdx-mdxD2-mice/mdxNSG02&quot;, &quot;~/project_3_mdx-mdxD2-mice/mdxD2NSG01&quot;, &quot;~/project_3_mdx-mdxD2-mice/mdxD2NSG02&quot;))
+
+# loop through and read each dataset
+for (folder in samples) {
+  foldername &lt;- basename(folder)            # get just the folder name
+  data &lt;- Read10X(data.dir = folder)        # read 10X data
+  assign(paste0(foldername, &quot;.data&quot;), data) # create object [name].data
+  
+  # create Seurat object
+  seu &lt;- CreateSeuratObject(
+    counts = data,
+    project = foldername,
+    min.features = 200,   # include only cells where &gt;=200 features detected
+    min.cells = 3         # include only features that are detected in &gt;=3 cells
+  )
+  
+  assign(foldername, seu) # put the object back into environment
+}</code></pre>
+</div>
+<div id="quality-control" class="section level2">
+<h2>QUALITY CONTROL</h2>
+<div id="calculate-percent.mt" class="section level3">
+<h3>C<strong>alculate <code>percent.mt</code></strong></h3>
+<pre class="r"><code>## loop %mt calculation ----
+samples &lt;- c(&quot;wtNSG01&quot;, &quot;wtNSG02&quot;, &quot;mdxNSG01&quot;, &quot;mdxNSG02&quot;, &quot;mdxD2NSG01&quot;, &quot;mdxD2NSG02&quot;)
+
+for (obj_name in samples) {
+  seu &lt;- get(obj_name)
+  seu[[&quot;percent.mt&quot;]] &lt;- PercentageFeatureSet(seu, pattern = &quot;^mt[-\\.]&quot;)
+  assign(obj_name, seu)
+}</code></pre>
+</div>
+<div id="visualize-qc-metrics" class="section level3">
+<h3>Visualize QC metrics</h3>
+<p><strong>QC plots for all samples (before filtering)</strong></p>
+<pre class="r"><code># example plot
+
+  # individual plots
+  p1 &lt;- VlnPlot(wtNSG02, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;),
+                ncol = 3, pt.size = 1)
+  p2 &lt;- FeatureScatter(wtNSG02, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;percent.mt&quot;)
+  p3 &lt;- FeatureScatter(wtNSG02, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;nFeature_RNA&quot;)
+  
+  # combine plots
+  p1 / (p2 | p3)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/QC_plots-1.png" width="1152" /></p>
+</div>
+<div id="filtering-poor-quality-cells" class="section level3">
+<h3>Filtering poor-quality cells</h3>
+<ul>
+<li><p>Remove cells with &gt;15% of UMIs mapped to mt genes (according
+to <em>Methods</em> described in the paper)</p></li>
+<li><p><em>“removing cells with fewer genes than 500, 800 and 800 and
+higher genes than 5000, 6000 and 6000 genes from the analysis in wt-NSG,
+mdx-NSG and mdxD2-NSG samples, respectively”</em></p></li>
+</ul>
+<div class="line-block"><u>Comment:</u> supplemental figures suggest any
+other filtering condtions (?!)</div>
+<pre class="r"><code># Remove cells from wt-NSG ----
+wtNSG01_subset &lt;- subset(wtNSG01, 
+                         subset = nFeature_RNA &gt; 500 &amp; nFeature_RNA &lt; 5000 &amp;
+                           nCount_RNA &gt; 500 &amp; nCount_RNA &lt; 25000 &amp; 
+                           percent.mt &lt; 15)
+dim(wtNSG01_subset) # check number of cells after subset</code></pre>
+<pre><code>## [1] 17546  3305</code></pre>
+<pre class="r"><code>wtNSG02_subset &lt;- subset(wtNSG02, 
+                         subset = nFeature_RNA &gt; 500 &amp; nFeature_RNA &lt; 5000 &amp;
+                           nCount_RNA &gt; 500 &amp; nCount_RNA &lt; 20000 &amp; 
+                           percent.mt &lt; 15)
+dim(wtNSG02_subset)</code></pre>
+<pre><code>## [1] 15862  1636</code></pre>
+<pre class="r"><code># Remove cells from mdx-NSG ----
+mdxNSG01_subset &lt;- subset(mdxNSG01, 
+                          subset = nFeature_RNA &gt; 800 &amp; nFeature_RNA &lt; 6000 &amp; 
+                            nCount_RNA &gt; 500 &amp; nCount_RNA &lt; 35000 &amp; 
+                            percent.mt &lt; 15)
+dim(mdxNSG01_subset)</code></pre>
+<pre><code>## [1] 18089  5558</code></pre>
+<pre class="r"><code>mdxNSG02_subset &lt;- subset(mdxNSG02, 
+                          subset = nFeature_RNA &gt; 800 &amp; nFeature_RNA &lt; 6000 &amp;
+                            nCount_RNA &gt; 500 &amp; nCount_RNA &lt; 20000 &amp; 
+                            percent.mt &lt; 15)
+dim(mdxNSG02_subset)</code></pre>
+<pre><code>## [1] 15796  1120</code></pre>
+<pre class="r"><code># Remove cells from mdxD2-NSG ----
+mdxD2NSG01_subset &lt;- subset(mdxD2NSG01, 
+                            subset = nFeature_RNA &gt; 800 &amp; nFeature_RNA &lt; 6000 &amp; 
+                              nCount_RNA &gt; 500 &amp; nCount_RNA &lt; 35000 &amp; 
+                              percent.mt &lt; 15)
+dim(mdxD2NSG01_subset)</code></pre>
+<pre><code>## [1] 17992  6392</code></pre>
+<pre class="r"><code>mdxD2NSG02_subset &lt;- subset(mdxD2NSG02, 
+                            subset = nFeature_RNA &gt; 800 &amp; nFeature_RNA &lt; 6000 &amp; 
+                              nCount_RNA &gt; 500 &amp; nCount_RNA &lt; 40000 &amp; 
+                              percent.mt &lt; 15)
+dim(mdxD2NSG02_subset)</code></pre>
+<pre><code>## [1] 18319  5806</code></pre>
+<pre class="r"><code># Plot together
+
+  # Merge the objects first
+  merged &lt;- merge(
+  wtNSG01_subset,
+  y = list(wtNSG02_subset, 
+           mdxNSG01_subset, mdxNSG02_subset,
+           mdxD2NSG01_subset, mdxD2NSG02_subset),
+  add.cell.ids = c(&quot;wtNSG01&quot;, &quot;wtNSG02&quot;, 
+           &quot;mdxNSG01&quot;, &quot;mdxD2NSG02&quot;,
+           &quot;mdxD2NSG01&quot;, &quot;mdxD2NSG02&quot;),
+  project = &quot;wt_mdx_mdxD2&quot;
+) %&gt;% JoinLayers()
+  
+  # Classify the conditions
+  merged$condition &lt;- dplyr::case_when(
+  merged$orig.ident %in% c(&quot;wtNSG01&quot;, &quot;wtNSG02&quot;) ~ &quot;wt&quot;,
+  merged$orig.ident %in% c(&quot;mdxNSG01&quot;, &quot;mdxNSG02&quot;) ~ &quot;mdx&quot;,
+  merged$orig.ident %in% c(&quot;mdxD2NSG01&quot;, &quot;mdxD2NSG02&quot;) ~ &quot;mdxD2&quot;
+)
+
+  # Plot
+  VlnPlot(merged, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;),
+                ncol = 3, pt.size = 0.5)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/filtered_QC-1.png" width="1728" /></p>
+<p>Number of cells in each condition:</p>
+<pre class="r"><code>merged$condition &lt;- factor(merged$condition, levels = c(&quot;wt&quot;, &quot;mdx&quot;, &quot;mdxD2&quot;))
+table(merged$condition)</code></pre>
+<pre><code>## 
+##    wt   mdx mdxD2 
+##  4941  6678 12198</code></pre>
+<div class="line-block"><u>Note:</u> There are still more cells in each
+condition than described in the paper.</div>
+</div>
+</div>
+<div id="processing-individual-seurat-objects" class="section level2">
+<h2>PROCESSING INDIVIDUAL SEURAT OBJECTS</h2>
+<p>First, we’ll try processing each sample following the standard Seurat
+workflow:</p>
+<p><code>NormalizeData –&gt; FindVariableFeatures –&gt; ScaleData –&gt; RunPCA</code></p>
+<p>According to the paper, variance due to cell cycle should be
+regressed out when scaling data. To use <code>CellCycleScoring</code>
+function, we need to normalize the data beforehand.</p>
+<div id="normalization-cell-cycle-scores" class="section level3">
+<h3>Normalization &amp; Cell cycle scores</h3>
+<pre class="r"><code># cc.genes include human genes (how &#39;bout murine?)
+# need to change cell cycle gene list in Seurat to lowercase
+cc.genes &lt;- Seurat::cc.genes
+s.genes &lt;- str_to_title(cc.genes$s.genes) # e.g. ADAM12 → Adam12
+g2m.genes &lt;- str_to_title(cc.genes$g2m.genes)
+
+# check how many of the gene names match :
+# sum(rownames(wtNSG01) %in% s.genes)</code></pre>
+<pre class="r"><code>samples_subset &lt;- c(&quot;wtNSG01_subset&quot;, &quot;wtNSG02_subset&quot;, 
+           &quot;mdxNSG01_subset&quot;, &quot;mdxNSG02_subset&quot;,
+           &quot;mdxD2NSG01_subset&quot;, &quot;mdxD2NSG02_subset&quot;)
+
+# loop the cell cycle scoring ----
+for (obj_name in samples_subset) {
+  seu &lt;- get(obj_name)
+  
+  seu &lt;- NormalizeData(seu,
+                       verbose = FALSE) %&gt;% # Seurat v5 object must be normalized (to generate to &#39;data&#39; layer) before Cell Cycle Scoring
+        
+         CellCycleScoring(s.features = s.genes, 
+                          g2m.features = g2m.genes, 
+                          set.ident = TRUE)
+  
+  assign(obj_name, seu)
+}
+
+# confirm after Cell Cycle Scoring
+head(wtNSG02_subset@meta.data[, c(&quot;S.Score&quot;, &quot;G2M.Score&quot;, &quot;Phase&quot;)])</code></pre>
+<pre><code>##                        S.Score    G2M.Score Phase
+## AAACCCACACCTCAGG-1 -0.04002763 -0.055894238    G1
+## AAACGAAAGTGGAAAG-1 -0.06723013 -0.039478670    G1
+## AAACGAACAATCGCCG-1 -0.02287563 -0.034691242    G1
+## AAACGAACAGGAGGAG-1  0.02226274  0.002000912     S
+## AAACGAATCGAATCCA-1 -0.03438708  0.043326426   G2M
+## AAACGCTCACCGTCTT-1 -0.01180265 -0.044048513    G1</code></pre>
+<pre class="r"><code># visualize
+RidgePlot(wtNSG02_subset, features = c(&quot;Cdk1&quot;,&quot;Mki67&quot;,&quot;Ube2c&quot;,
+                                &quot;Top2a&quot;,&quot;Mcm6&quot;,&quot;Pcna&quot;,
+                                &quot;Pola1&quot;,&quot;Uhrf1&quot;,&quot;Cdc45&quot;), ncol = 3)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/cell_cycle_scoring-1.png" width="1152" /></p>
+<pre class="r"><code># to see if cell cycle heterogeneity accounts for variance in PCA
+wtNSG01_subset &lt;- wtNSG01_subset %&gt;% 
+  ScaleData(verbose = FALSE) %&gt;% 
+  RunPCA(features = c(s.genes, g2m.genes), verbose = FALSE)
+
+wtNSG02_subset &lt;- wtNSG02_subset %&gt;% 
+  ScaleData(verbose = FALSE) %&gt;% 
+  RunPCA(features = c(s.genes, g2m.genes), verbose = FALSE)
+
+DimPlot(wtNSG01_subset) + DimPlot(wtNSG02_subset)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/cell_cycle_pca-1.png" width="1152" /></p>
+<div class="line-block"><u>Comment:</u> Cell cycle gene expression
+doesn’t seem to account for lots of variance in our datasets?</div>
+</div>
+<div id="findvariablefeatures-and-scaledata" class="section level3">
+<h3><code>FindVariableFeatures</code> and <code>ScaleData</code></h3>
+<pre class="r"><code># samples_subset already normalized ==&gt; &#39;data&#39; layer in &#39;RNA&#39; assay
+# FindVariableFeatures %&gt;% ScaleData ----
+
+for (obj_name in samples_subset) {
+  seu &lt;- get(obj_name)
+  
+  seu &lt;- FindVariableFeatures(seu, 
+                              assay = &quot;RNA&quot;,
+                              selection.method = &quot;vst&quot;,
+                              nfeatures = 3000,
+                              verbose = FALSE) %&gt;%
+    
+    # regress out the variance introduced by MT gene expression 
+    # and cell cycle heterogeneity
+    ScaleData(vars.to.regress = c(&quot;percent.mt&quot;, &quot;S.Score&quot;, &quot;G2M.Score&quot;), 
+              verbose = FALSE)
+  
+  assign(obj_name, seu)
+}</code></pre>
+</div>
+<div id="sctransform" class="section level3">
+<h3>SCTransform</h3>
+<p>This single command can replace <code>NormalizedData</code>,
+<code>ScaleData</code>, and <code>FindVariableFeatures</code>.</p>
+<p>SCTransform does it better to <em>mitigate the effect of highly
+expressed genes</em>.</p>
+<p>SCTransform adds another assay ‘<code>SCT</code>’ beside
+‘<code>RNA</code>’.</p>
+<div class="line-block"><u>Note:</u> After running, SCT becomes the
+active assay. Different numbers of highly variable genes (HVGs) were
+returned by two methods.</div>
+<pre class="r"><code># loop SCTransform for all seurat objects ----
+
+for (obj_name in samples_subset) {
+  seu &lt;- get(obj_name)
+  
+  seu &lt;- SCTransform(
+    seu,
+    variable.features.n = 3000,
+    do.center = TRUE,
+    vars.to.regress = c(&quot;percent.mt&quot;, 
+                        &quot;S.Score&quot;, &quot;G2M.Score&quot;),
+    return.only.var.genes = FALSE,
+    verbose = FALSE
+  )
+  
+  assign(obj_name, seu)
+}
+
+# two methods return different number of features
+mdxNSG02_subset@assays$RNA</code></pre>
+<pre><code>## Assay (v5) data with 15796 features for 1120 cells
+## Top 10 variable features:
+##  Acta1, Mylpf, Myl1, Fmod, Ckm, Tnnc2, Tnni2, Tnnt3, Rgs5, Tpm1 
+## Layers:
+##  counts, data, scale.data</code></pre>
+<pre class="r"><code>mdxNSG02_subset@assays$SCT</code></pre>
+<pre><code>## SCTAssay data with 14390 features for 1120 cells, and 1 SCTModel(s) 
+## Top 10 variable features:
+##  Cd74, Lyz2, Fabp4, H2-Aa, H2-Ab1, Apoe, H2-Eb1, C1qb, C1qa, C1qc</code></pre>
+</div>
+<div id="dimensionality-reduction" class="section level3">
+<h3>Dimensionality Reduction</h3>
+<ul>
+<li><p>Linear dimensionality reduction: PCA</p></li>
+<li><p>Non-linear dimensionality reduction: t-SNE, UMAP</p></li>
+</ul>
+<p>Intuitively, the non-linear methods try to place every sample in a
+low-dimensional space (2D or 3D), so that the <strong>distances</strong>
+or <strong>neighborhood relationships</strong> between different samples
+in the original high-dimensional space are largely retained.</p>
+<div id="pca" class="section level4">
+<h4>PCA</h4>
+<pre class="r"><code># Collect plots
+plots &lt;- list()
+
+# loop PCA and plot for each seurat object ----
+for (obj_name in samples_subset) {
+  seu &lt;- get(obj_name)
+  DefaultAssay(seu) &lt;- &quot;RNA&quot;
+  
+  # run PCA
+  seu &lt;- RunPCA(
+    seu,
+    # assay = &quot;RNA&quot;, 
+    npcs = 50,
+    reduction.name = &quot;RNA_pca&quot;, 
+    verbose = FALSE
+  )
+  
+  # save PCA back into environment
+  assign(obj_name, seu)
+  
+  # make Elbow plot
+  p &lt;- ElbowPlot(seu, 
+                 reduction = &quot;RNA_pca&quot;,
+                 ndims =  ncol(Embeddings(seu, &quot;RNA_pca&quot;))) + 
+       ggtitle(obj_name)
+  
+  plots[[obj_name]] &lt;- p
+}
+
+# Combine into one grid
+wrap_plots(plots, ncol = 2)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/PCA_Elbow_plots-1.png" width="768" /></p>
+</div>
+<div id="umapt-sne" class="section level4">
+<h4>UMAP/t-SNE</h4>
+<pre class="r"><code># loop for running UMAP ----
+
+for (obj_name in samples_subset) {
+  seu &lt;- get(obj_name)
+  
+  seu &lt;- RunUMAP(
+    seu, 
+    assay = &quot;RNA&quot;,
+    reduction = &quot;RNA_pca&quot;,
+    dims = 1:30, # which dimensions to use: first 30 PCs
+    reduction.name = &quot;RNA_umap&quot;,
+    verbose = FALSE
+  )
+  
+  assign(obj_name, seu)
+}
+
+# Feature plot to visualize some canonical marker expression ----
+
+FeaturePlot(mdxNSG01_subset, 
+            c(&quot;Pax7&quot;, &quot;Myod1&quot;, &quot;Myog&quot;, &quot;Myh1&quot;, &quot;Ckm&quot;, # myogenic
+              &quot;Tnmd&quot;,                                 # tenocytes
+              &quot;Pdgfra&quot;, &quot;Apod&quot;, &quot;Col1a1&quot;,             # stromal
+              &quot;Ptprc&quot;),                               # macrophages
+            ncol=3, 
+            reduction = &quot;RNA_umap&quot;)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/UMAP-1.png" width="768" /></p>
+</div>
+</div>
+<div id="cell-clustering" class="section level3">
+<h3>Cell Clustering</h3>
+<p>(Graph-based Clustering) First, a <strong>Shared Nearest Neighbors
+(SNN)</strong> graph is constructed based on the Euclidean distance
+between cells in PCA space. The strength of connection between two cells
+is based on the shared overlap in their local neighborhoods (the Jaccard
+similarity).</p>
+<p>Resolution usually goes from 0.1 to 1. Higher resolution means finer
+clustering.</p>
+<div class="line-block"><u>Note:</u> After running, the active identity
+of the cells becomes ‘cluster’.</div>
+<pre class="r"><code># Collect plots
+cluster_plots &lt;- list()
+
+# loop for finding clusters ----
+
+for (obj_name in samples_subset) {
+  seu &lt;- get(obj_name)
+  
+  seu &lt;- FindNeighbors(seu,             # build SNN network
+                       reduction = &quot;RNA_pca&quot;,
+                       graph.name = &quot;RNA_snn&quot;,
+                       dims = 1:30
+  ) %&gt;% FindClusters(resolution = 0.2,
+                     graph.name = &quot;RNA_snn&quot;,
+                     verbose = FALSE,
+                     )  # based on the SNN network, Louvain algorithm identifies &#39;communities&#39; (or clusters) via modularity searching
+  
+  assign(obj_name, seu)
+  
+  # make UMAP plots with cell clusters
+  p &lt;- DimPlot(seu, reduction = &quot;RNA_umap&quot;, label = TRUE) +
+    ggtitle(obj_name)
+  
+  cluster_plots[[obj_name]] &lt;- p
+  
+}
+
+# Combine into one grid
+wrap_plots(cluster_plots, ncol = 2)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/clustering-1.png" width="768" /></p>
+</div>
+</div>
+<div id="data-integration" class="section level2">
+<h2>DATA INTEGRATION</h2>
+<div id="before-integration" class="section level3">
+<h3>Before integration</h3>
+<p>We can merge replicates → conditions step-wise. Since early on we
+created the <strong>merged</strong> object of all 6 samples, we’ll use
+it for further analyses:</p>
+<pre class="r"><code># confirm that merged has single &#39;counts&#39; layer
+merged</code></pre>
+<pre><code>## An object of class Seurat 
+## 19773 features across 23817 samples within 1 assay 
+## Active assay: RNA (19773 features, 0 variable features)
+##  1 layer present: counts</code></pre>
+<p>Look at the batch effects <strong>BEFORE integration</strong>. Let’s
+proceed with the standard workflow, instead of
+<code>SCTransform</code>:</p>
+<pre class="r"><code># process the merged seurat object ----
+merged &lt;- NormalizeData(merged,
+                        assay = &#39;RNA&#39;,
+                        verbose = FALSE) %&gt;% 
+  FindVariableFeatures(selection.method = &#39;vst&#39;,
+                       nfeatures = 3000,
+                       verbose = FALSE) %&gt;%
+  CellCycleScoring(s.features = s.genes,
+                          g2m.features = g2m.genes,
+                          set.ident = TRUE) %&gt;%
+  ScaleData(assay = &#39;RNA&#39;,
+            vars.to.regress = c(&quot;percent.mt&quot;, &quot;S.Score&quot;, &quot;G2M.Score&quot;),
+            verbose = FALSE) %&gt;%
+  RunPCA(assay = &#39;RNA&#39;,
+         reduction.name = &quot;merged_pca&quot;,
+         npcs = 50,
+         verbose = FALSE)
+
+# Elbow plot
+ElbowPlot(
+  merged,
+  reduction = &#39;merged_pca&#39;,
+  ndims = 50
+)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/unintegrated-1.png" width="384" /></p>
+<p><em>How much variance can 30 PCs account for?</em></p>
+<pre class="r"><code># choose number of PCs ----
+stdev &lt;- merged@reductions$merged_pca@stdev
+var_explained &lt;- (stdev^2) / sum(stdev^2)
+cumsum(var_explained)[30]</code></pre>
+<pre><code>## [1] 0.9134484</code></pre>
+<pre class="r"><code># data clustering WITHOUT integration ----
+merged &lt;- RunUMAP(merged,
+                  reduction = &quot;merged_pca&quot;,
+                  reduction.name = &quot;merged_umap&quot;,
+                  dims = 1:30, verbose = FALSE) %&gt;% 
+  FindNeighbors(reduction = &#39;merged_pca&#39;, 
+                graph.name = &#39;merged_snn&#39;, # distinguish from graph after integration
+                dims = 1:30, verbose = FALSE) %&gt;% 
+  FindClusters(resolution = 0.2, graph.name = &#39;merged_snn&#39;, verbose = FALSE) 
+
+# following FindClusters a meta.data called &#39;merged_snn_res.0.6&#39; is created
+# the last clustering goes to &#39;seurat_clusters&#39; meta.data
+
+# visualize the clusters BEFORE integration ----
+p1 &lt;- DimPlot(merged, reduction = &quot;merged_umap&quot;,
+              group.by=&quot;orig.ident&quot;)
+p2 &lt;- DimPlot(merged, reduction = &quot;merged_umap&quot;,
+               group.by=&quot;condition&quot;)
+p3 &lt;- DimPlot(merged, reduction = &quot;merged_umap&quot;,
+              group.by=&quot;seurat_clusters&quot;)
+p1 + p2 + p3</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/cluster_before_integrate-1.png" width="1440" /></p>
+<pre class="r"><code># segregate clusters by conditions ----
+DimPlot(merged, 
+        label = TRUE, 
+        split.by = &quot;condition&quot;) +
+  NoLegend()</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/unnamed-chunk-1-1.png" width="1152" /></p>
+<div class="line-block"><u>Comment:</u> Data from different samples look
+quite homogenous even without integration (?!)</div>
+</div>
+<div id="harmony-integration" class="section level3">
+<h3>Harmony integration</h3>
+<p>The variability explained by the variables provided
+to <code>group.by.vars</code> is what Harmony will try to remove. If we
+want to remove the differences due to sample-specific effects, do as
+below.</p>
+<pre class="r"><code># Harmony integrates all cells from different conditions and replicates ----
+integrated_harmony &lt;- RunHarmony(
+  merged,
+  group.by.vars = &quot;orig.ident&quot;,
+  assay.use = &quot;RNA&quot;,
+  reduction.use = &quot;merged_pca&quot;,
+  dims.use = 1:30,
+  max.iter.harmony = 50,
+  verbose = FALSE
+)
+
+# Elbow plot
+ElbowPlot(
+  integrated_harmony,
+  reduction = &#39;harmony&#39;,
+  ndims = 50
+)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/harmony-1.png" width="384" /></p>
+<pre class="r"><code># UMAP after integration ----
+
+integrated_harmony &lt;- RunUMAP(integrated_harmony, 
+                      reduction = &quot;harmony&quot;,
+                      dims = 1:30,
+                      reduction.name = &#39;harmony_umap&#39;,
+                      verbose = FALSE)
+
+integrated_harmony &lt;- FindNeighbors(integrated_harmony, 
+                            reduction = &quot;harmony&quot;, 
+                            dims = 1:30,
+                            graph.name = &#39;harmony_snn&#39;, verbose = FALSE) %&gt;% 
+  FindClusters(graph.name = &#39;harmony_snn&#39;,
+    resolution = 0.2, verbose = FALSE)
+
+# visualize the integration results ----
+ 
+plot1 &lt;- DimPlot(integrated_harmony,
+                  reduction = &#39;harmony_umap&#39;,
+                  group.by=&quot;orig.ident&quot;, 
+                  pt.size = 0.1)
+plot2 &lt;- DimPlot(integrated_harmony,
+                  reduction = &#39;harmony_umap&#39;,
+                  group.by=&quot;condition&quot;, 
+                  pt.size = 0.1)
+plot3 &lt;- DimPlot(integrated_harmony,
+                  group.by = &quot;harmony_snn_res.0.2&quot;,
+                  reduction = &#39;harmony_umap&#39;,
+                  label = T, 
+                  pt.size = 0.1)
+plot1 + plot2 + plot3</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/umap_plot_after_integration-1.png" width="1440" /></p>
+<div class="line-block"><u>Note:</u> We can try broad clustering (~low
+resolution) and subcluster later.</div>
+<pre class="r"><code>DimPlot(integrated_harmony,
+        # group by the active idents i.e. clusters of resolution 0.2
+        reduction = &#39;harmony_umap&#39;,
+        label = TRUE, 
+        split.by = &quot;condition&quot;) + NoLegend()</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/unnamed-chunk-2-1.png" width="1152" /></p>
+</div>
+<div id="identify-cell-populations" class="section level3">
+<h3>Identify cell populations</h3>
+<div id="find-marker-genes" class="section level4">
+<h4>Find marker genes</h4>
+<pre class="r"><code>## DE analysis between cells of one cluster versus cells in ALL other clusters ----
+
+# find markers (by default, p is adjusted by Bonferroni correction)
+cluster_markers &lt;- FindAllMarkers(
+  assay = &quot;RNA&quot;, 
+  group.by = &quot;harmony_snn_res.0.2&quot;,
+  integrated_harmony,
+  only.pos = TRUE,       # Wilcoxon&#39;s rank sum test by default
+  return.thresh = 0.01,  # only return markers that have p-value &lt; 0.01
+  
+  min.pct = 0.25, # only test genes that are detected in a minimum percentage of 
+                  # 0.25 of cells in either of the 2 populations
+  
+  min.diff.pct = 0.15,   # only test genes that show a minimum difference
+  
+  logfc.threshold = 0.41 # limit testing to gene which show &gt;=0.41-fold difference 
+                         # (log-scale) between two groups
+)
+
+# threshold to significant markers
+sig_markers &lt;- subset(cluster_markers, p_val_adj &lt; 0.01)
+
+# top marker genes in each cell cluster
+top_markers &lt;- sig_markers %&gt;% 
+  group_by(cluster) %&gt;% 
+  top_n(n=10, wt = avg_log2FC)</code></pre>
+<p>Look at the markers indentified in the paper:</p>
+<pre class="r"><code># check the markers in the current paper ----
+
+paper_markers &lt;- c( 
+  &quot;Ptprc&quot;, &quot;Cd68&quot;,                      # macrophages
+  &quot;Pdgfra&quot;, &quot;Ly6a&quot;,                     # stromal
+  &quot;Ly6c1&quot;, &quot;Ly6c2&quot;,                     # monocytes
+  &quot;Pecam1&quot;, &quot;Cdh5&quot;,                     # endothelial
+  &quot;Tnmd&quot;, &quot;Scx&quot;,                        # tenocytes
+  &quot;Pax7&quot;, &quot;Myf5&quot;,                       # MuSCs
+  &quot;Cxcr2&quot;, &quot;S100a9&quot;,                    # neutrophils
+  &quot;Myl1&quot;, &quot;Tnni2&quot;,                      # myocytes
+  &quot;Rgs5&quot;, &quot;Abcc9&quot;, &quot;Kcnj8&quot;,             # pericytes
+  &quot;Ptprz1&quot;, &quot;Sox10&quot;, &quot;Mpz&quot;,             # Schwann cells
+  &quot;Ly6d&quot;, &quot;Flt3&quot;,                       # dendritic cells
+  &quot;Cma1&quot;, &quot;Cma2&quot;)                       # mast cells
+
+# visualization ----
+
+VlnPlot(integrated_harmony, 
+        features = paper_markers, 
+        pt.size = 0, 
+        ncol = 4)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/markers_paper-1.png" width="1152" /></p>
+<p>(Refer also to this paper <a
+href="https://www.cell.com/molecular-therapy-family/methods/fulltext/S2329-0501(25)00140-8"
+class="uri">https://www.cell.com/molecular-therapy-family/methods/fulltext/S2329-0501(25)00140-8</a>
+for an expanded list of markers → compare to the
+<code>sig_markers</code> table)</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Cluster</th>
+<th>Markers</th>
+<th>Cell type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td><em>Ptprc, Cd68</em></td>
+<td>Macrophages</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td><em>Pdgfra, Ly6a, Fap, Dcn, Fbn1</em></td>
+<td>Stromal</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td><em>Ccr1, Ccr2, Ly6c2, Ptprc, Lyz2, Cd52, Cd14, Tlr2</em></td>
+<td>Ly6c monocytes</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td><em>Pdgfra, Ly6a, Fap, Dcn, Fbn1</em></td>
+<td>Stromal</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td><em>Cdh5, Pecam1, Fabp4, Dach1, Mecom, Ablim3</em></td>
+<td>Endothelial cells</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td><em>Mki67</em>, <em>Stmn1</em>, <em>Smc4</em></td>
+<td>Dividing immune cells</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td><em>Tnmd, Scx</em></td>
+<td>Tenocytes</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td><em>Ckm</em>, <em>Myl1</em>, <em>Tnnc2</em>, <em>Tnni2</em>,
+<em>Tnnt3</em>, <em>Mylpf</em></td>
+<td>Myocytes</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td><em>Pax7, Myf5, Megf10, Vcam1, Sytl2, Fgfr4, Chodl</em></td>
+<td>MuSCs</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td><em>Cxcr2, S100a9, S100a8, Hcar2, Il1b, Clec4e</em></td>
+<td>Neutrophils</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td><em>Rgs5, Abcc9</em>, <em>Kcnj8, Trpc3, Prkg1, Gucy1a2</em></td>
+<td>Pericytes</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td><em>Ccr9, Ly6d, Flt3</em></td>
+<td>Dendritic cells</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="annotate-cell-types" class="section level4">
+<h4>Annotate cell types</h4>
+<pre class="r"><code># assign cell ids ----  
+
+new.cluster.ids &lt;- c(   
+  &quot;0&quot; = &quot;Macrophage&quot;,   
+  &quot;1&quot; = &quot;Stromal&quot;,   
+  &quot;2&quot; = &quot;Ly6c Monocyte&quot;,   
+  &quot;3&quot; = &quot;Stromal&quot;,
+  &quot;4&quot; = &quot;Endothelial&quot;,
+  &quot;5&quot; = &quot;Dividing immune cells&quot;,   
+  &quot;6&quot; = &quot;Tenocyte&quot;,   
+  &quot;7&quot; = &quot;Myocyte&quot;,   
+  &quot;8&quot; = &quot;MuSC&quot;,   
+  &quot;9&quot; = &quot;Neutrophil&quot;,   
+  &quot;10&quot; = &quot;Pericyte&quot;,   
+  &quot;11&quot; = &quot;Dendritic&quot; 
+  )  
+
+# rename the clusters ----  
+
+integrated_harmony &lt;- RenameIdents(integrated_harmony, new.cluster.ids) 
+integrated_harmony$celltype &lt;- Idents(integrated_harmony)
+
+  # at this point, we may want to save the integrated object:
+  # saveRDS(integrated_harmony, file=&quot;integrated_harmony.rds&quot;)</code></pre>
+<p>Continue using a previously saved Seurat object:</p>
+<pre class="r"><code># now load the saved annotated object
+integrated_harmony &lt;- readRDS(&quot;~/project_3_mdx-mdxD2-mice/integrated_harmony.rds&quot;)
+
+# count number of cells per cluster per condition
+n_cells &lt;- FetchData(integrated_harmony,                       
+                     vars = c(&quot;celltype&quot;, &quot;condition&quot;)) %&gt;%         
+  dplyr::count(celltype, condition) %&gt;%         
+  tidyr::spread(celltype, n)</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Number of cells per cluster per condition
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+condition
+</th>
+<th style="text-align:right;">
+Macrophage
+</th>
+<th style="text-align:right;">
+Stromal
+</th>
+<th style="text-align:right;">
+Ly6c Monocyte
+</th>
+<th style="text-align:right;">
+Endothelial
+</th>
+<th style="text-align:right;">
+Dividing immune cells
+</th>
+<th style="text-align:right;">
+Tenocyte
+</th>
+<th style="text-align:right;">
+Myocyte
+</th>
+<th style="text-align:right;">
+MuSC
+</th>
+<th style="text-align:right;">
+Neutrophil
+</th>
+<th style="text-align:right;">
+Pericyte
+</th>
+<th style="text-align:right;">
+Dendritic
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+wt
+</td>
+<td style="text-align:right;">
+540
+</td>
+<td style="text-align:right;">
+2695
+</td>
+<td style="text-align:right;">
+127
+</td>
+<td style="text-align:right;">
+879
+</td>
+<td style="text-align:right;">
+80
+</td>
+<td style="text-align:right;">
+141
+</td>
+<td style="text-align:right;">
+185
+</td>
+<td style="text-align:right;">
+108
+</td>
+<td style="text-align:right;">
+55
+</td>
+<td style="text-align:right;">
+114
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mdx
+</td>
+<td style="text-align:right;">
+1835
+</td>
+<td style="text-align:right;">
+2742
+</td>
+<td style="text-align:right;">
+856
+</td>
+<td style="text-align:right;">
+450
+</td>
+<td style="text-align:right;">
+150
+</td>
+<td style="text-align:right;">
+241
+</td>
+<td style="text-align:right;">
+68
+</td>
+<td style="text-align:right;">
+162
+</td>
+<td style="text-align:right;">
+87
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mdxD2
+</td>
+<td style="text-align:right;">
+5575
+</td>
+<td style="text-align:right;">
+2905
+</td>
+<td style="text-align:right;">
+1684
+</td>
+<td style="text-align:right;">
+401
+</td>
+<td style="text-align:right;">
+810
+</td>
+<td style="text-align:right;">
+346
+</td>
+<td style="text-align:right;">
+109
+</td>
+<td style="text-align:right;">
+53
+</td>
+<td style="text-align:right;">
+148
+</td>
+<td style="text-align:right;">
+64
+</td>
+<td style="text-align:right;">
+103
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="cell-type-composition" class="section level4">
+<h4>Cell type composition</h4>
+<p>We can plot the number of each cell type in each condition:</p>
+<pre class="r"><code># Cell type composition ----
+comp_df &lt;- integrated_harmony@meta.data %&gt;%
+  dplyr::count(condition, 
+               celltype) %&gt;%
+  group_by(condition) %&gt;%
+  mutate(freq = n / sum(n))
+
+p3 &lt;- ggplot(comp_df, aes(x = condition, y = freq, fill = celltype)) +
+  geom_bar(stat = &quot;identity&quot;, position = &quot;fill&quot;) +
+  geom_text(aes(label = scales::percent(freq, accuracy = 0.1)),
+            position = position_fill(vjust = 0.5), size = 2) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(y = &quot;Cell type proportion&quot;, x = &quot;Condition&quot;) +
+  theme_classic()
+
+p1 &lt;- DimPlot(integrated_harmony,
+              reduction = &quot;harmony_umap&quot;,
+              group.by = &quot;celltype&quot;,
+              label = TRUE)
+
+p2 &lt;- DimPlot(integrated_harmony,
+              reduction = &quot;harmony_umap&quot;,
+              split.by = &quot;condition&quot;,
+              label = TRUE)
+
+(p2) / (p1 | p3) + 
+  plot_layout(widths = c(3, 1, 1))</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/cell_type_composition-1.png" width="1440" /></p>
+</div>
+</div>
+</div>
+<div id="data-visualization" class="section level2">
+<h2>DATA VISUALIZATION</h2>
+<div id="expression-of-marker-genes-across-cell-types"
+class="section level3">
+<h3>Expression of marker genes across cell types</h3>
+<p>Since previously we combined 2 clusters into ‘Stromal’, let’s do
+<code>FindAllMarkers</code> again:</p>
+<pre class="r"><code>cluster_markers &lt;- FindAllMarkers(
+  assay = &quot;RNA&quot;, 
+  group.by = &quot;celltype&quot;,
+  integrated_harmony,
+  only.pos = TRUE,
+  return.thresh = 0.01,
+  min.pct = 0.25,
+  min.diff.pct = 0.15,
+  logfc.threshold = 0.41,
+  verbose = FALSE
+)
+
+# threshold to significant markers
+sig_markers &lt;- subset(cluster_markers, p_val_adj &lt; 0.01)
+
+# top marker genes in each cell cluster
+top_markers &lt;- sig_markers %&gt;% 
+  group_by(cluster) %&gt;% 
+  top_n(n=10, wt = avg_log2FC)</code></pre>
+<pre class="r"><code># dot plot (not too many genes &#39;cause the plot will be too dense)
+integrated_harmony %&gt;% DotPlot(
+  group.by=&#39;celltype&#39;,
+  assay=&#39;RNA&#39;,
+  dot.scale = 5,
+  features=unique(top_markers$gene)) + 
+  # NoLegend() +
+  scale_color_viridis_c() +
+  theme(
+    axis.line = element_blank(),
+    panel.border = element_rect(colour = &quot;black&quot;, fill=NA, size=1),
+    axis.title = element_blank(), 
+    axis.text.x=element_text(angle = 90,hjust = 1,vjust= 0.5),
+    axis.text.y = element_text(size = 6),
+    panel.grid.major = element_line(colour = &quot;gray&quot;, size = 0.5
+    )
+  ) + coord_flip()</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/dotplot-1.png" width="672" /></p>
+<p>The top markers may not include some ‘key’ genes that actually help
+us identify the cell clusters. We may want to plot our list of genes of
+interest and cluster them to see a clear pattern.</p>
+<pre class="r"><code># may plot with clustering
+marker_gene_list &lt;- c(
+  &quot;Ptprc&quot;, &quot;Cd68&quot;,
+  &quot;Pdgfra&quot;, &quot;Ly6a&quot;, &quot;Fap&quot;, &quot;Dcn&quot;,
+  &quot;Ccr1&quot;, &quot;Ccr2&quot;, &quot;Ly6c2&quot;, &quot;Ptprc&quot;, &quot;Lyz2&quot;, &quot;Cd52&quot;, &quot;Cd14&quot;, &quot;Tlr2&quot;,
+  &quot;Cdh5&quot;, &quot;Pecam1&quot;, &quot;Fabp4&quot;, &quot;Dach1&quot;, &quot;Mecom&quot;, &quot;Ablim3&quot;,
+  &quot;Ly6c1&quot;,
+  &quot;Mki67&quot;, &quot;Stmn1&quot;, &quot;Cd68&quot;, &quot;Cd74&quot;, &quot;Smc4&quot;,
+  &quot;Tnmd&quot;, &quot;Scx&quot;,
+  &quot;Cxcr2&quot;, &quot;S100a9&quot;, &quot;S100a8&quot;, &quot;Hcar2&quot;, &quot;Il1b&quot;, &quot;Clec4e&quot;,
+  &quot;Pax7&quot;, &quot;Myf5&quot;, &quot;Megf10&quot;, &quot;Vcam1&quot;, &quot;Sytl2&quot;, &quot;Fgfr4&quot;, &quot;Chodl&quot;,
+  &quot;Ckm&quot;, &quot;Myl1&quot;, &quot;Tnnc2&quot;, &quot;Tnni2&quot;, &quot;Tnnt3&quot;, &quot;Mylpf&quot;,
+  &quot;Rgs5&quot;, &quot;Abcc9&quot;, &quot;Kcnj8&quot;, &quot;Trpc3&quot;, &quot;Prkg1&quot;, &quot;Gucy1a2&quot;,
+  &quot;Cdh19&quot;, &quot;S100b&quot;, &quot;Fap&quot;, &quot;Dcn&quot;,
+  &quot;Ccr9&quot;, &quot;Ly6d&quot;, &quot;Flt3&quot;
+)
+
+Clustered_DotPlot(integrated_harmony,
+                  features = marker_gene_list,
+                  plot_km_elbow = FALSE,
+                  cluster_feature = TRUE) # to cluster genes</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/clustered_dotplot-1.png" width="480" /></p>
+<p>Another way of visualization is heatmap.</p>
+<ul>
+<li><p><code>DotPlot</code> shows the average expression of a feature
+across all cells in each cell type</p></li>
+<li><p><code>DoHeatmap</code> shows expression of all cells (each bin =
+one cell) grouped into cell types</p></li>
+</ul>
+<pre class="r"><code>DoHeatmap(integrated_harmony, 
+          assay = &quot;RNA&quot;,
+          group.by = &quot;celltype&quot;,
+          features = unique(top_markers$gene))</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/heatmap-1.png" width="1440" /></p>
+<p><code>DoHeatmap</code> does not support hierarchical clustering; if
+needed, we can take the scaled expression table and do it manually.</p>
+<div class="line-block"><u>Note:</u>
+<code>DoHeatmap(integrated_harmony, features = marker_gene_list)$data</code>
+is a scaled matrix.</div>
+<p><strong><em>Can we do a heatmap of average expression of each feature
+across all cells of a cell type?</em></strong></p>
+<pre class="r"><code># Compute average expression ----
+avg.exp &lt;- AverageExpression(integrated_harmony, 
+                             group.by = &quot;celltype&quot;)
+
+# matrix: genes (rows) × clusters (cols)
+mat &lt;- avg.exp$RNA
+
+# Subset to genes of interest ----
+genes.use &lt;- unique((sig_markers %&gt;% group_by(cluster) %&gt;% 
+  top_n(n=60, wt = avg_log2FC))$gene) # include more top markers --&gt; more likely to see the &#39;key&#39; genes
+mat.sub &lt;- mat[genes.use, , drop = FALSE] # subset the matrix to only genes to be used
+
+# Scale expression (z-score per gene) ----
+mat.scaled &lt;- t(scale(t(mat.sub)))   # t(mat.sub) since scale() operates on columns of matrix/df
+
+# find where &#39;key&#39; markers appear in our matrix
+marker_idx &lt;- which(rownames(mat.scaled) %in% marker_gene_list)
+marker_labels &lt;- rownames(mat.scaled)[marker_idx]
+
+# check range of expression values &amp; adjust color scale accordingly
+print(&quot;range of expression values for adjusting color scale :&quot;)</code></pre>
+<pre><code>## [1] &quot;range of expression values for adjusting color scale :&quot;</code></pre>
+<pre class="r"><code>quantile(as.matrix(mat.scaled), c(0.1, 0.5, 0.9, 0.99))</code></pre>
+<pre><code>##        10%        50%        90%        99% 
+## -0.4873183 -0.3177444  1.0848263  3.0149692</code></pre>
+<pre class="r"><code># Plot heatmap ----
+Heatmap(mat.scaled,
+        name = &quot;zscore&quot;,
+        cluster_rows = FALSE,    # no need if markers already in celltype order 
+        cluster_columns = FALSE,
+        col = colorRamp2(c(-1, 0, 3), 
+                         c(&quot;blue&quot;, &quot;white&quot;, &quot;red&quot;)),
+        show_row_names = FALSE,
+        right_annotation = rowAnnotation(
+          markers = anno_mark(
+            at = marker_idx,
+            labels = marker_labels,
+            labels_gp = gpar(fontsize = 8)
+        )
+      )
+    )</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/heatmap_avg_expr-1.png" width="480" /></p>
+</div>
+<div id="bonus-explore-adamtsl2-and-pdlim5-expression"
+class="section level3">
+<h3>(Bonus) Explore Adamtsl2 and Pdlim5 expression</h3>
+<p><strong><em>How the expression of Adamtsl2 and Pdlim5 change in each
+cell type across condition?</em></strong></p>
+<p>First option is to do a dot plot:</p>
+<pre class="r"><code># average expression of each feature in each celltype in each condition
+DotPlot(integrated_harmony, assay = &quot;RNA&quot;,
+        features = c(&quot;Adamtsl2&quot;, &quot;Pdlim5&quot;),
+        cols = c(&quot;blue&quot;, &quot;red&quot;, &quot;green&quot;), 
+        dot.scale = 8, 
+        split.by = &quot;condition&quot;) + 
+  coord_flip() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 0.5, vjust = 0.5)
+  )</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/unnamed-chunk-4-1.png" width="1440" /></p>
+<p>Problem is that it’s hard to compare, for example, Macrophage_wt
+vs. Dendritic_wt, or to see in each condition which is the cell
+population that highly expresses the feature of interest.</p>
+</div>
+<div id="multi-clustercondition-dot-plot-for-1-gene"
+class="section level3">
+<h3>Multi-cluster/condition dot plot for <u>1 gene</u></h3>
+<p>Get expression matrix from Seurat object using a function adopted
+from <a
+href="https://divingintogeneticsandgenomics.com/post/how-to-make-a-multi-group-dotplot-for-single-cell-rnaseq-data/">chatomics</a>:</p>
+<pre class="r"><code># create a function ----
+GetMatrixFromSeuratByGroupSingle&lt;- function(obj, feature, group1, group2){
+  if (length(feature) != 1){
+          stop(&quot;please only provide only one gene name&quot;)
+  }
+  exp_mat&lt;- GetAssayData(obj, assay = &quot;RNA&quot;, slot = &quot;data&quot;)[feature, , drop=FALSE]
+  count_mat&lt;- GetAssayData(obj, assay = &quot;RNA&quot;, slot = &quot;counts&quot;)[feature, , drop=FALSE]
+  
+  meta&lt;- obj@meta.data %&gt;%
+  tibble::rownames_to_column(var = &quot;cell&quot;)
+        
+  # get the average expression matrix
+  exp_df&lt;- as.matrix(exp_mat) %&gt;% 
+    as.data.frame() %&gt;% 
+    tibble::rownames_to_column(var=&quot;gene&quot;) %&gt;%
+    tidyr::pivot_longer(!gene, names_to = &quot;cell&quot;, values_to = &quot;expression&quot;) %&gt;%
+    left_join(meta) %&gt;%
+    group_by(gene,{{group1}}, {{group2}}) %&gt;%
+    summarise(average_expression = mean(expression)) %&gt;%
+    tidyr::pivot_wider(names_from = {{group1}}, 
+                       values_from= average_expression) 
+  
+  exp_mat&lt;- exp_df[, -c(1,2)] %&gt;% as.matrix()
+  rownames(exp_mat)&lt;- exp_df %&gt;% pull({{group2}})
+  
+  # get the percentage positive cell matrix
+  count_df&lt;- as.matrix(count_mat) %&gt;% 
+    as.data.frame() %&gt;% 
+    tibble::rownames_to_column(var=&quot;gene&quot;) %&gt;%
+    tidyr::pivot_longer(!gene, names_to = &quot;cell&quot;, values_to = &quot;count&quot;) %&gt;%
+    left_join(meta) %&gt;%
+    group_by(gene, {{group1}}, {{group2}}) %&gt;%
+    summarise(percentage = mean(count &gt;0)) %&gt;%
+    tidyr::pivot_wider(names_from = {{group1}}, 
+                       values_from= percentage) 
+
+  percent_mat&lt;- count_df[, -c(1,2)] %&gt;% as.matrix()
+  rownames(percent_mat)&lt;- count_df %&gt;% pull({{group2}})
+  
+  if (!identical(dim(exp_mat), dim(percent_mat))) {
+    stop(&quot;the dimension of the two matrice should be the same!&quot;)
+  }
+  
+  if(! all.equal(colnames(exp_mat), colnames(percent_mat))) {
+    stop(&quot;column names of the two matrice should be the same!&quot;)
+  }
+  
+  if(! all.equal(rownames(exp_mat), rownames(percent_mat))) {
+    stop(&quot;column names of the two matrice should be the same!&quot;)
+  }
+  return(list(exp_mat = exp_mat, percent_mat = percent_mat))
+}
+
+# apply function to get expression matrix ----
+mat &lt;- GetMatrixFromSeuratByGroupSingle(obj = integrated_harmony, feature = &quot;Adamtsl2&quot;, celltype, condition)</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Average (normalized) expression of Adamtsl2 in each cell type in each
+condition
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Macrophage
+</th>
+<th style="text-align:right;">
+Stromal
+</th>
+<th style="text-align:right;">
+Ly6c Monocyte
+</th>
+<th style="text-align:right;">
+Endothelial
+</th>
+<th style="text-align:right;">
+Dividing immune cells
+</th>
+<th style="text-align:right;">
+Tenocyte
+</th>
+<th style="text-align:right;">
+Myocyte
+</th>
+<th style="text-align:right;">
+MuSC
+</th>
+<th style="text-align:right;">
+Neutrophil
+</th>
+<th style="text-align:right;">
+Pericyte
+</th>
+<th style="text-align:right;">
+Dendritic
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+wt
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1391754
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0032691
+</td>
+<td style="text-align:right;">
+0.0784267
+</td>
+<td style="text-align:right;">
+0.0459980
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mdx
+</td>
+<td style="text-align:right;">
+0.0005930
+</td>
+<td style="text-align:right;">
+0.0984758
+</td>
+<td style="text-align:right;">
+0.0008476
+</td>
+<td style="text-align:right;">
+0.0045827
+</td>
+<td style="text-align:right;">
+0.0097162
+</td>
+<td style="text-align:right;">
+0.0464782
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0019508
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0242904
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mdxD2
+</td>
+<td style="text-align:right;">
+0.0020968
+</td>
+<td style="text-align:right;">
+0.0666163
+</td>
+<td style="text-align:right;">
+0.0016102
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0085638
+</td>
+<td style="text-align:right;">
+0.0177265
+</td>
+<td style="text-align:right;">
+0.0037391
+</td>
+<td style="text-align:right;">
+0.0078857
+</td>
+<td style="text-align:right;">
+0.0121206
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0115017
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Number of cells per cluster per condition
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Macrophage
+</th>
+<th style="text-align:right;">
+Stromal
+</th>
+<th style="text-align:right;">
+Ly6c Monocyte
+</th>
+<th style="text-align:right;">
+Endothelial
+</th>
+<th style="text-align:right;">
+Dividing immune cells
+</th>
+<th style="text-align:right;">
+Tenocyte
+</th>
+<th style="text-align:right;">
+Myocyte
+</th>
+<th style="text-align:right;">
+MuSC
+</th>
+<th style="text-align:right;">
+Neutrophil
+</th>
+<th style="text-align:right;">
+Pericyte
+</th>
+<th style="text-align:right;">
+Dendritic
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+wt
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1450835
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0045506
+</td>
+<td style="text-align:right;">
+0.0625000
+</td>
+<td style="text-align:right;">
+0.0638298
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mdx
+</td>
+<td style="text-align:right;">
+0.0010899
+</td>
+<td style="text-align:right;">
+0.1053975
+</td>
+<td style="text-align:right;">
+0.0023364
+</td>
+<td style="text-align:right;">
+0.0044444
+</td>
+<td style="text-align:right;">
+0.0066667
+</td>
+<td style="text-align:right;">
+0.0539419
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0061728
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0166667
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mdxD2
+</td>
+<td style="text-align:right;">
+0.0025112
+</td>
+<td style="text-align:right;">
+0.0815835
+</td>
+<td style="text-align:right;">
+0.0023753
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0061728
+</td>
+<td style="text-align:right;">
+0.0231214
+</td>
+<td style="text-align:right;">
+0.0091743
+</td>
+<td style="text-align:right;">
+0.0188679
+</td>
+<td style="text-align:right;">
+0.0067568
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0097087
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now make a dot plot:</p>
+<pre class="r"><code>library(ComplexHeatmap)
+
+quantile(as.numeric(mat$exp_mat), 
+         probs = c(0.1, 0.5, 0.8, 0.9), 
+         na.rm = TRUE)</code></pre>
+<pre><code>##         10%         50%         80%         90% 
+## 0.000000000 0.002096849 0.021664872 0.062588701</code></pre>
+<pre class="r"><code>col_fun&lt;-  circlize::colorRamp2(c(0, 0.002, 0.06), c(&quot;#FDE725FF&quot;, &quot;#238A8DFF&quot;, &quot;#440154FF&quot;))
+
+layer_fun = function(j, i, x, y, w, h, fill){
+    grid.rect(x = x, y = y, width = w, height = h, 
+              gp = gpar(col = &quot;gray&quot;, fill = NA))
+    grid.circle(x=x,y=y,r= sqrt(pindex(mat$percent_mat, i, j)) * unit(4, &quot;mm&quot;),
+                gp = gpar(fill = col_fun(pindex(mat$exp_mat, i, j)), col = NA))}
+
+hp &lt;- Heatmap(mat$exp_mat,
+             heatmap_legend_param=list(title= &quot;expression&quot;),
+             column_title = &quot;Adamtsl2&quot;, 
+             col=col_fun,
+             rect_gp = gpar(type = &quot;none&quot;),
+             layer_fun = layer_fun,
+             row_names_gp = gpar(fontsize = 8),
+             border = &quot;black&quot;,
+             cluster_rows = FALSE, 
+             cluster_columns = FALSE,
+             row_names_side  = &quot;left&quot;)
+hp</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/multi-cluster.condition_1_gene-1.png" width="960" /></p>
+<p>Add legend:</p>
+<pre class="r"><code>lgd_list = list(
+    Legend( labels = c(0, 10, 25, 50, 75), title = &quot;percentage&quot;,
+            graphics = list(
+              function(x, y, w, h) grid.circle(x = x, y = y, r = 0  * unit(4, &quot;mm&quot;),
+                                               gp = gpar(fill = &quot;black&quot;)),
+              function(x, y, w, h) grid.circle(x = x, y = y, r = sqrt(0.1)  * unit(4, &quot;mm&quot;),
+                                               gp = gpar(fill = &quot;black&quot;)),
+              function(x, y, w, h) grid.circle(x = x, y = y, r = sqrt(0.25) * unit(4, &quot;mm&quot;),
+                                               gp = gpar(fill = &quot;black&quot;)),
+              function(x, y, w, h) grid.circle(x = x, y = y, r = sqrt(0.5) * unit(4, &quot;mm&quot;),
+                                               gp = gpar(fill = &quot;black&quot;)),
+              function(x, y, w, h) grid.circle(x = x, y = y, r = sqrt(0.75) * unit(4, &quot;mm&quot;),
+                                               gp = gpar(fill = &quot;black&quot;))),
+            row_gap = unit(2.5, &quot;mm&quot;)
+            ))
+
+draw(hp, annotation_legend_list = lgd_list, ht_gap = unit(1, &quot;cm&quot;),
+     annotation_legend_side = &quot;right&quot;)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/add_percentage_legend-1.png" width="1152" /></p>
+</div>
+</div>
+<div id="sub-clustering" class="section level2">
+<h2>SUB-CLUSTERING</h2>
+<div id="stromal-cell-subclustering" class="section level3">
+<h3>Stromal cell subclustering</h3>
+<pre class="r"><code>stromal_sub &lt;- subset(integrated_harmony, 
+                      celltype == &quot;Stromal&quot;)
+
+DefaultAssay(stromal_sub) &lt;- &quot;RNA&quot;
+stromal_sub &lt;- stromal_sub %&gt;%
+  NormalizeData(verbose = FALSE) %&gt;% 
+  FindVariableFeatures(selection.method = &#39;vst&#39;,
+                       nfeatures = 3000,
+                       verbose = FALSE) %&gt;%
+  ScaleData(verbose = FALSE) %&gt;%
+  RunPCA(reduction.name = &quot;RNA_pca&quot;,
+         npcs = 50,
+         verbose = FALSE)
+
+stromal_sub &lt;- RunUMAP(stromal_sub,
+                       reduction = &quot;RNA_pca&quot;,
+                       dims = 1:30,
+                       reduction.name = &quot;RNA_umap&quot;, verbose = FALSE)
+
+DimPlot(stromal_sub, 
+        reduction = &quot;RNA_umap&quot;, 
+        group.by = &quot;orig.ident&quot;, 
+        split.by = &quot;condition&quot;)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/stromal_subcluster-1.png" width="1440" /></p>
+<pre class="r"><code># why do we have to RunHarmony again ?
+p1 &lt;- DimPlot(stromal_sub, 
+        reduction = &quot;harmony_umap&quot;, 
+        group.by = &quot;orig.ident&quot;, 
+        split.by = &quot;condition&quot;) + 
+  labs(title = &quot;Harmony (old)&quot;)
+
+stromal_sub &lt;- RunHarmony(stromal_sub,
+                          group.by.vars = &quot;orig.ident&quot;,
+                          reduction.use = &quot;RNA_pca&quot;,
+                          dims.use = 1:30, # PCA ~ 90% total variance
+                          max.iter.harmony = 50, verbose = FALSE
+                          )
+stromal_sub &lt;- RunUMAP(stromal_sub, 
+                       reduction = &quot;harmony&quot;,
+                       reduction.name = &quot;harmony_umap&quot;, 
+                       dims = 1:30,
+                       verbose = FALSE)
+
+p2 &lt;- DimPlot(stromal_sub, 
+        reduction = &quot;harmony_umap&quot;, 
+        group.by = &quot;orig.ident&quot;, 
+        split.by = &quot;condition&quot;) +
+  labs(title = &quot;Harmony (re-run)&quot;)
+
+p1 / p2</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/stromal_subcluster_harmony-1.png" width="1440" /></p>
+<pre class="r"><code># sub-cluster stromal cells ----
+stromal_sub &lt;- FindNeighbors(stromal_sub,
+                             reduction = &quot;harmony&quot;,
+                             graph.name = &#39;harmony_snn&#39;,
+                             dims = 1:30,
+                             verbose = FALSE
+  ) %&gt;% FindClusters(graph.name = &#39;harmony_snn&#39;,
+                     resolution = 0.3, verbose = FALSE)
+
+# find markers of sub-clusters ----
+stromal_sub_markers &lt;- FindAllMarkers(
+  assay = &quot;RNA&quot;, 
+  group.by = &quot;harmony_snn_res.0.3&quot;,
+  stromal_sub,
+  only.pos = TRUE,    
+  return.thresh = 0.01,
+  min.pct = 0.25,
+  min.diff.pct = 0.15, 
+  logfc.threshold = 0.41, verbose = FALSE
+)
+
+stromal_top_markers &lt;- stromal_sub_markers %&gt;% 
+  group_by(cluster) %&gt;% 
+  top_n(n=10, wt = avg_log2FC)
+
+DoHeatmap(stromal_sub,
+          features = unique(stromal_top_markers$gene),
+          group.by = &quot;harmony_snn_res.0.3&quot;)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/stromal_find_subcluster-1.png" width="1440" /></p>
+<pre class="r"><code># sub-cluster markers from the paper ----
+stromal_markers_paper &lt;- c(
+  &quot;Dpp4&quot;, &quot;Tek&quot;, &quot;Cd55&quot;, &quot;Cxcl14&quot;, &quot;Fbln7&quot;, 
+  &quot;Spry1&quot;, &quot;Vwa1&quot;, &quot;Gdf10&quot;, &quot;Fmo2&quot;, &quot;Osr1&quot;,
+  &quot;Meox1&quot;, &quot;Meox2&quot;, &quot;Adam12&quot;, &quot;S100a4&quot;, &quot;Vcam1&quot;,
+  &quot;Acta2&quot;, &quot;Thy1&quot;, &quot;Mmp19&quot;, &quot;Mmp14&quot;, &quot;Cxcl5&quot;,
+  &quot;Il1rl1&quot;, &quot;Tnfrsf12a&quot;, &quot;Thrsp&quot;, &quot;Tenm2&quot;, &quot;Cd53&quot;)
+
+genes_of_interest &lt;- c(  
+  &quot;Setdb1&quot;, &quot;Ehmt2&quot;, &quot;Suv39h1&quot;,
+  &quot;Tgfb1&quot;,  &quot;Serpine1&quot;, &quot;Comp&quot;, &quot;Emilin1&quot;, &quot;Adamtsl2&quot;, 
+  &quot;Cebpa&quot;, &quot;Apoe&quot;, &quot;Plin1&quot;
+)
+
+VlnPlot(stromal_sub, 
+        features = stromal_markers_paper,
+        group.by = &quot;harmony_snn_res.0.3&quot;,
+        ncol = 5, pt.size = 0)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/unnamed-chunk-6-1.png" width="1440" /></p>
+</div>
+<div id="musc-subclustering" class="section level3">
+<h3>MuSC subclustering</h3>
+<pre class="r"><code>MuSC_sub &lt;- subset(integrated_harmony, celltype == &quot;MuSC&quot;)
+
+DefaultAssay(MuSC_sub) &lt;- &quot;RNA&quot;
+MuSC_sub &lt;- MuSC_sub %&gt;%
+  NormalizeData(verbose = FALSE) %&gt;% 
+  FindVariableFeatures(selection.method = &#39;vst&#39;, nfeatures = 3000, verbose = FALSE) %&gt;%
+  ScaleData(verbose = FALSE) %&gt;%
+  RunPCA(reduction.name = &quot;RNA_pca&quot;, npcs = 50, verbose = FALSE)
+
+MuSC_sub &lt;- RunUMAP(MuSC_sub, reduction = &quot;RNA_pca&quot;, dims = 1:30, reduction.name = &quot;RNA_umap&quot;, verbose = FALSE)
+
+DimPlot(MuSC_sub, reduction = &quot;RNA_umap&quot;, group.by = &quot;orig.ident&quot;, split.by = &quot;condition&quot;)</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/MuSC_subset-1.png" width="1152" /></p>
+<pre class="r"><code># RunHarmony again
+p1 &lt;- DimPlot(MuSC_sub, reduction = &quot;harmony_umap&quot;, group.by = &quot;orig.ident&quot;, split.by = &quot;condition&quot;) + labs(title = &quot;Harmony (old)&quot;)
+
+MuSC_sub &lt;- RunHarmony(MuSC_sub,
+                       group.by.vars = &quot;orig.ident&quot;,
+                       reduction.use = &quot;RNA_pca&quot;,
+                       dims.use = 1:30, # PCA ~ 90% total variance
+                       max.iter.harmony = 50, verbose = FALSE)
+
+MuSC_sub &lt;- RunUMAP(MuSC_sub, reduction = &quot;harmony&quot;, reduction.name = &quot;harmony_umap&quot;, dims = 1:30, verbose = FALSE)
+
+p2 &lt;- DimPlot(MuSC_sub, reduction = &quot;harmony_umap&quot;, group.by = &quot;orig.ident&quot;, split.by = &quot;condition&quot;) + labs(title = &quot;Harmony (re-run)&quot;)
+
+p1 / p2</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/MuSC_subset_harmony-1.png" width="1152" /></p>
+<pre class="r"><code># sub-cluster MuSCs ----
+MuSC_sub &lt;- FindNeighbors(MuSC_sub, reduction = &quot;harmony&quot;, graph.name = &#39;harmony_snn&#39;, dims = 1:30, verbose = FALSE) %&gt;% 
+  FindClusters(graph.name = &#39;harmony_snn&#39;, resolution = 0.6, verbose = FALSE)
+
+p1 &lt;- DimPlot(MuSC_sub, reduction = &quot;harmony_umap&quot;, group.by = &quot;harmony_snn_res.0.6&quot;)
+p2 &lt;- DimPlot(MuSC_sub, reduction = &quot;harmony_umap&quot;, group.by = &quot;condition&quot;)
+p3 &lt;- VlnPlot(MuSC_sub, features = c(&quot;Pax7&quot;, &quot;Myf5&quot;, &quot;Myod1&quot;, &quot;Myog&quot;, &quot;C1qa&quot;, &quot;Cxcr4&quot;), group.by = &quot;harmony_snn_res.0.6&quot;, pt.size = 0, ncol = 2)
+(p1 / p2) | p3</code></pre>
+<p><img src="project_3_mdx-mdxD2-mice_files/figure-html/MuSC_find_subcluster-1.png" width="1440" /></p>
+<p><br> <br></p>
+<hr />
+<p><strong>TUTORIALS</strong></p>
+<p>Chatomics (check this <a
+href="https://divingintogeneticsandgenomics.com/post/how-to-make-a-multi-group-dotplot-for-single-cell-rnaseq-data/">post</a>
+on how to make a multi-group dotplot)</p>
+<p><strong>REFERENCES</strong></p>
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+<div id="ref-saleh2022" class="csl-entry">
+Saleh, Kholoud K., Haibin Xi, Corey Switzler, Emily Skuratovsky, Matthew
+A. Romero, Peggie Chien, Devin Gibbs, et al. 2022. <span>“Single Cell
+Sequencing Maps Skeletal Muscle Cellular Diversity as Disease Severity
+Increases in Dystrophic Mouse Models.”</span> <em>iScience</em> 25 (11):
+105415. <a
+href="https://doi.org/10.1016/j.isci.2022.105415">https://doi.org/10.1016/j.isci.2022.105415</a>.
+</div>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

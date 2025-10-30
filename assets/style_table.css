@@ -1,0 +1,45 @@
+/* --- Tables --- */
+table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  margin-top: 0.8em;
+  font-size: 0.95em;
+  max-width: 100%;
+  width: max-content;
+  min-width: 100%;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+/* --- Code Blocks --- */
+pre, pre.sourceCode, pre code {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  display: block;
+  white-space: pre;
+  max-width: 100%;
+}
+
+pre.sourceCode {
+  background-color: #f8f8f8;
+  padding: 1em;
+  border-radius: 6px;
+  font-size: 0.9em;
+  line-height: 1.5;
+}

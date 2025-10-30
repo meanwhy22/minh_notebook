@@ -1,0 +1,187 @@
+---
+title: "Finding common dysregulated genes in different DMD models"
+output:
+  html_document:
+    code_folding: hide
+    css: assets/style_table.css
+---
+
+> **Date:** 26/10/2025
+>
+> **Description:** In this session, we're going to intersect lists of DE genes derived from different models for DMD: mdx mouse, rat, and human organoid.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## DEG lists
+
+### Differentially expressed genes in DMD versus wildtype rat:
+
+```{r rat_DEGs}
+DMD_vs_WT_rat_DEGs <- read.table(file = "projects/project_2/DEG_List/DMD_vs_WT_DEGs.txt", header = TRUE)
+table(DMD_vs_WT_rat_DEGs$regulation)
+```
+
+```{r echo=FALSE}
+library(dplyr)
+knitr::kable(head(DMD_vs_WT_rat_DEGs), 
+             caption = "DE genes: DMD versus WT rat") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+### Differentially expressed genes in DMD versus IsoCTR organoid:
+
+```{r human_DEGs}
+DMD_vs_IsoCTR_organoid <- read.table("projects/project_1/DEG_List/Untreated_vs_IsoCTR_DEGs.txt", header = TRUE)
+table(DMD_vs_IsoCTR_organoid$regulation)
+
+# Convert EMSEMBL IDs to gene names
+library(org.Hs.eg.db)
+annots <- AnnotationDbi::select(org.Hs.eg.db,
+                                
+                                # ensembl ids in count table
+                                keys=DMD_vs_IsoCTR_organoid$ENSEMBL,
+                                
+                                columns=c("SYMBOL", "GENENAME"), 
+                                keytype="ENSEMBL")
+
+# Replace missing SYMBOL with the ENSEMBL ID
+annots$SYMBOL[is.na(annots$SYMBOL)] <- annots$ENSEMBL
+
+# Collapse SYMBOL, but if >1 SYMBOL, use the ENSEMBL ID instead
+annots <- annots %>%
+  group_by(ENSEMBL) %>%
+  summarise(
+    SYMBOL = ifelse(n_distinct(SYMBOL) == 1,
+                    unique(SYMBOL),
+                    ENSEMBL)
+  )
+
+# Add 'SYMBOL' column to DEG table
+DMD_vs_IsoCTR_organoid <- DMD_vs_IsoCTR_organoid %>% left_join(annots, by = "ENSEMBL")
+```
+
+```{r echo=FALSE}
+knitr::kable(head(DMD_vs_IsoCTR_organoid), 
+             caption = "DE genes: DMD versus IsoCTR human muscle organoids") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+### Differentially expressed genes in mdx mice
+
+#### mdx versus wildtype mouse:
+
+```{r mdx_mouse_DEGs}
+# Start from processed Seurat object
+integrated_harmony <- readRDS("~/project_3_mdx-mdxD2-mice/integrated_harmony.rds")
+
+library(Seurat)
+mdx_vs_wt_mouse_DEGs <- FindMarkers(
+  assay = "RNA", slot = "data",
+  group.by = "condition",
+  ident.1 = "mdx",
+  ident.2 = "wt",
+  integrated_harmony,
+  only.pos = FALSE,
+  verbose = FALSE
+)
+
+# Classify Up/Down/Non-significant genes
+mdx_vs_wt_mouse_DEGs$regulation <- ifelse(
+  mdx_vs_wt_mouse_DEGs$p_val_adj < 0.01 & 
+    mdx_vs_wt_mouse_DEGs$avg_log2FC > 1, "Up",
+  ifelse( mdx_vs_wt_mouse_DEGs$p_val_adj < 0.01 & 
+            mdx_vs_wt_mouse_DEGs$avg_log2FC < -1, "Down",
+          "NotSig")
+)
+table(mdx_vs_wt_mouse_DEGs$regulation)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(mdx_vs_wt_mouse_DEGs), 
+             caption = "DE genes: mdx versus wt mouse") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+#### mdx/D2 versus wildtype mouse:
+
+```{r mdxD2_mouse_DEGs}
+mdxD2_vs_wt_mouse_DEGs <- FindMarkers(
+  assay = "RNA", slot = "data",
+  group.by = "condition",
+  ident.1 = "mdxD2",
+  ident.2 = "wt",
+  integrated_harmony,
+  only.pos = FALSE,
+  verbose = FALSE
+)
+
+# Classify Up/Down/Non-significant genes
+mdxD2_vs_wt_mouse_DEGs$regulation <- ifelse(
+  mdxD2_vs_wt_mouse_DEGs$p_val_adj < 0.01 & 
+    mdxD2_vs_wt_mouse_DEGs$avg_log2FC > 1, "Up",
+  ifelse( mdxD2_vs_wt_mouse_DEGs$p_val_adj < 0.01 & 
+            mdxD2_vs_wt_mouse_DEGs$avg_log2FC < -1, "Down",
+          "NotSig")
+)
+table(mdxD2_vs_wt_mouse_DEGs$regulation)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(mdxD2_vs_wt_mouse_DEGs), 
+             caption = "DE genes: mdx/D2 versus wt mice") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Intersect different models
+
+### How many DE genes in mdx mouse (compared to wt) are also differentially regulated in mdx/D2 (compared to wt)?
+
+```{r mdx_mdxD2_intersect, fig.height=5, fig.width=5}
+library(ggVennDiagram)
+library(ggplot2)
+ggVennDiagram(list(
+  rownames(mdx_vs_wt_mouse_DEGs %>% filter(regulation=="Up")),
+  rownames(mdxD2_vs_wt_mouse_DEGs %>% filter(regulation=="Up"))
+), label_alpha = 0,
+              label = "count",
+              category.names = c("mdx vs. wt",
+                                 "mdxD2 vs. wt")) +
+  scale_fill_gradient(low = "white", high = "orange") +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm"))
+```
+
+### How many genes are consistently upregulated in mdx mouse, rat, and hiPSC-derived organoid?
+
+```{r models_intersection, fig.height=5, fig.width=7}
+# Match uppercase for all DEG sets 
+x <- list(
+  toupper((DMD_vs_WT_rat_DEGs %>% filter(regulation=="Up"))$gene),
+  toupper((DMD_vs_IsoCTR_organoid %>% filter(regulation=="Up"))$SYMBOL),
+  toupper((rownames(mdx_vs_wt_mouse_DEGs %>% filter(regulation=="Up")))),
+  toupper((rownames(mdxD2_vs_wt_mouse_DEGs %>% filter(regulation=="Up"))))
+)
+
+ggVennDiagram(x, label_alpha = 0,
+              label = "count",
+              category.names = c("Up in DMD rat",
+                                 "Up in DMD human organoid",
+                                 "Up in mdx mouse",
+                                 "Up in mdx/D2 mouse")) +
+  scale_fill_gradient(low = "white", high = "orange") +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm"))
+```
+
+***Names of the common genes?***
+
+```{r common_gene_names}
+# Get common gene names found in all lists
+Reduce(intersect, x)
+```
