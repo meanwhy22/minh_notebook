@@ -67,3 +67,4 @@ ref_genome/
 apptainer/
 .cache/
 .conda/!docs/*_files/
+!docs/*_files/
